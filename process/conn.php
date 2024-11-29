@@ -1,9 +1,9 @@
 <?php
-$serverName = "172.25.114.171\SQLEXPRESS";
+$serverName = "172.25.116.188";
 $connectionOptions = array(
-    "Database" => "my_template_db",
+    "Database" => "fg_loading_db",
     "Uid" => "sa",
-    "PWD" => "SystemGroup2018"
+    "PWD" => "SystemGroup@2022"
 );
 
  

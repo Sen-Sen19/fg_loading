@@ -2,7 +2,7 @@
 //SESSION
 include '../../process/login.php';
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['name'])) {
   header('location:../../');
   exit;
 } else if ($_SESSION['role'] == 'admin') {
@@ -15,9 +15,9 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Web Template - User</title>
+  <title>FG Loading System</title>
 
-  <link rel="icon" href="../../dist/img/logo.png" type="image/x-icon" />
+  <link rel="icon" href="../../dist/img/box.png" type="image/x-icon" />
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="../../dist/css/font.min.css">
   <!-- Font Awesome -->

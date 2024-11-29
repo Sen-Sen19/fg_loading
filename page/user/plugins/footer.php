@@ -1,13 +1,16 @@
- <footer class="main-footer">
-    <strong>Copyright &copy; 2023. Developed by: Vince Dale Alcantara</strong>
+
+ <footer class="main-footer" id="footer-background">
+    <strong>Copyright &copy; 2024. Developed by: Marc Neilsen Omabtang</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 1.0.2
+      <b>Version</b> 1.0.0
     </div>
-  </footer>
+</footer>
+
 <?php
 //MODALS
 include '../../modals/logout_modal.php';
+include '../../modals/add_modal.php'; 
 ?>
 <!-- jQuery -->
 <script src="../../plugins/jquery/dist/jquery.min.js"></script>
@@ -25,6 +28,10 @@ include '../../modals/logout_modal.php';
 <script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../../dist/js/adminlte.js"></script>
+<!-- Popup Center -->
+<script src="../../dist/js/popup_center.js"></script>
+<!-- Serialize -->
+<script src="../../dist/js/serialize.js"></script>
 
 </body>
 </html>

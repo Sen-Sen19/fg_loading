@@ -4,8 +4,17 @@ include 'conn.php';
 header('Content-Type: application/json');
 
 
-$query = "SELECT TOP (1000) [employee_id], [full_name], [username], [department], [password], [role] 
-          FROM [fg_loading_db].[dbo].[account]";
+$query = "SELECT [container]
+      ,[pallet]
+      ,[position1]
+      ,[remarks]
+      ,[position2]
+      ,[poly_size]
+      ,[quantity]
+      ,[others]
+      ,[scanned_by]
+      
+  FROM [fg_loading_db].[dbo].[inventory]";
 
 
 $result = sqlsrv_query($conn, $query);

@@ -1,37 +1,37 @@
 <?php
-session_name("my_template");
+session_name("fg_loading");
 session_start();
 
 include 'conn.php';
 
 if (isset($_POST['Login'])) {
-    $username = $_POST['username'];
+    $name = $_POST['name'];
     $password = $_POST['password'];
 
-    $sql = "SELECT username, role FROM account WHERE username = ? AND password = ?";
-    $params = array($username, $password);
+    $sql = "SELECT name, role FROM account WHERE name = ? AND password = ?";
+    $params = array($name, $password);
     $stmt = sqlsrv_prepare($conn, $sql, $params);
 
     if ($stmt && sqlsrv_execute($stmt)) {
         if (sqlsrv_has_rows($stmt)) {
             $result = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
             $role = $result['role']; 
-            $_SESSION['username'] = $username;
+            $_SESSION['name'] = $name;
             $_SESSION['password'] = $password;
             $_SESSION['role'] = $role;
 
             if ($role == 'user') {
-                header('location: page/user/pagination.php');
+                header('location:../page/user/scan.php');
                 exit;
             } elseif ($role == 'admin') { 
-                header('location: /my_template/page/admin/accounts.php');
+                header('location: /fg_loading/page/admin/accounts.php');
                 exit;
             }
         } else {
-            // Alert the user and redirect them after acknowledging the alert
+
             echo '<script>
                     alert("Sign In Failed. Maybe an incorrect credential or account not found");
-                    window.location.href = "/my_template/index.php";
+                    window.location.href = "/fg_loading/index.php";
                   </script>';
             exit;
         }
@@ -43,7 +43,7 @@ if (isset($_POST['Login'])) {
 if (isset($_POST['Logout'])) {
     session_unset();
     session_destroy();
-    header('location: /my_template/');
+    header('location: /fg_loading/');
     exit;
 }
 ?>
