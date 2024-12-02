@@ -37,7 +37,7 @@ if (isset($_SESSION['name'])) {
 <body class="hold-transition login-page">
   <div class="login-box">
     <div class="login-logo">
-      <img src="dist/img/logo.png" style="height:150px;">
+      <img src="dist/img/box.png" style="height:150px;">
       <h2><b>Web<br>Template</b></h2>
     </div>
     <!-- /.login-logo -->

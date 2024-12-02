@@ -12,7 +12,7 @@ document.getElementById("saveButton").addEventListener("click", () => {
         date_time: new Date().toISOString()
     };
 
-    // Check only required fields
+ 
     const requiredFields = ['container', 'pallet', 'position', 'poly_size', 'quantity', 'scanned_by'];
     if (requiredFields.some(field => formData[field] === "")) {
         Swal.fire({
@@ -31,18 +31,18 @@ document.getElementById("saveButton").addEventListener("click", () => {
     xhr.onload = () => {
         if (xhr.status === 200) {
             try {
-                const response = JSON.parse(xhr.responseText); // Parse the JSON response
+                const response = JSON.parse(xhr.responseText); 
                 if (response.success) {
                     Swal.fire({
                         title: 'Success!',
-                        text: response.message, // Use the message from the response
+                        text: response.message, 
                         icon: 'success',
                         timer: 1000,
                         showConfirmButton: false
                     }).then(() => {
-                        document.querySelector("form").reset(); // Reset form
-                        fetchData(); // Refresh data
-                        window.location.reload(); // Reload the page after success
+                        document.querySelector("form").reset();
+                        fetchData();
+                        window.location.reload(); 
                     });
                 } else {
                     Swal.fire({
@@ -84,9 +84,9 @@ document.getElementById("saveButton").addEventListener("click", () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchData(); // Populate data initially
-    refreshDateTime(); // Initialize date-time updater
-    setInterval(refreshDateTime, 1000); // Refresh date-time every second
+    fetchData();
+    refreshDateTime(); 
+    setInterval(refreshDateTime, 1000); 
 });
 
 function refreshDateTime() {

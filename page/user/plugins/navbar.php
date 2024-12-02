@@ -50,7 +50,7 @@ if (!isset($_SESSION['name'])) {
 
   <!-- Preloader -->
   <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__shake" src="../../dist/img/logo.png" alt="logo" height="60" width="60">
+    <img class="animation__shake" src="../../dist/img/box.png" alt="logo" height="60" width="60">
     <noscript>
       <br>
       <span>We are facing <strong>Script</strong> issues. Kindly enable <strong>JavaScript</strong>!!!</span>

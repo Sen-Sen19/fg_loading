@@ -66,6 +66,10 @@
                 <tbody id="admin_body" style="text-align: center; padding:10px;">
                 </tbody>
               </table>
+              
+            </div>
+            <div class="text-center mt-3">
+              <button id="load_more_button" class="btn" style="background-color:#008b02; color: white;" onclick="loadMoreData()">Load More</button>
             </div>
             <div id="totalCount" style="text-align: left; margin:10px ;">
               Total Records: 0
@@ -271,8 +275,14 @@
 </div>
 
 <script>
+let currentPage = 1; // Start from the first page
+let isFetching = false;
+
 function fetchData() {
-    fetch('../../process/inventory_view.php')
+    if (isFetching) return;
+    isFetching = true;
+
+    fetch(`../../process/inventory_view.php?page=${currentPage}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -281,26 +291,59 @@ function fetchData() {
         })
         .then(data => {
             const tableBody = document.getElementById('admin_body');
-            tableBody.innerHTML = '';
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                row.dataset.id = item.id;  
-                row.innerHTML = `
-                    <td>${item.container || 'N/A'}</td>
-                    <td>${item.pallet || 'N/A'}</td>
-                    <td>${item.position || 'N/A'}</td>
-                    <td>${item.poly_size || 'N/A'}</td>
-                    <td>${item.quantity || 'N/A'}</td>
-                    <td>${item.remarks || 'N/A'}</td>
-                    <td>${item.others || 'N/A'}</td>
-                    <td>${item.scanned_by || 'N/A'}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-            document.getElementById('totalCount').innerText = `Total Records: ${data.length}`;
+
+            // Check if there is data to load
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.dataset.id = item.id;
+                    row.innerHTML = `
+                        <td>${item.container || 'N/A'}</td>
+                        <td>${item.pallet || 'N/A'}</td>
+                        <td>${item.position || 'N/A'}</td>
+                        <td>${item.poly_size || 'N/A'}</td>
+                        <td>${item.quantity || 'N/A'}</td>
+                        <td>${item.remarks || 'N/A'}</td>
+                        <td>${item.others || 'N/A'}</td>
+                        <td>${item.scanned_by || 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Increment the page number after data is loaded
+                currentPage++;
+
+                // Update total count
+                document.getElementById('totalCount').innerText = `Total Records: ${tableBody.rows.length}`;
+            } else {
+                // No more data to load
+                document.getElementById('load_more_button').disabled = true;
+                document.getElementById('load_more_button').innerText = 'No more records';
+            }
         })
-        .catch(error => console.error('Error fetching data:', error));
+        .catch(error => console.error('Error fetching data:', error))
+        .finally(() => {
+            isFetching = false;
+        });
 }
+
+// Initial data load
+fetchData();
+
+// Function to handle "Load More" button click
+function loadMoreData() {
+    fetchData();
+}
+
+// Infinite scroll event listener
+const tableContainer = document.getElementById('accounts_table_res');
+tableContainer.addEventListener('scroll', () => {
+    if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 10) {
+        // User has scrolled to the bottom, load more data
+        loadMoreData();
+    }
+});
+
 
 
 </script>
