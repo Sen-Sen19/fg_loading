@@ -11,6 +11,7 @@
 //MODALS
 include '../../modals/logout_modal.php';
 include '../../modals/add_modal.php'; 
+include '../../modals/edit_modal.php'; 
 ?>
 <!-- jQuery -->
 <script src="../../plugins/jquery/dist/jquery.min.js"></script>

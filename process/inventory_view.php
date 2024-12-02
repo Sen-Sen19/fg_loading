@@ -4,11 +4,14 @@ include 'conn.php';
 header('Content-Type: application/json');
 
 
-$query = "SELECT [container]
+
+
+$query = "SELECT 
+       [id]
+      ,[container]
       ,[pallet]
-      ,[position1]
+      ,[position]
       ,[remarks]
-      ,[position2]
       ,[poly_size]
       ,[quantity]
       ,[others]
