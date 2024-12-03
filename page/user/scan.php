@@ -1,6 +1,8 @@
 <?php include 'plugins/navbar.php'; ?>
 <?php include 'plugins/sidebar/user_bar.php'; ?>
-
+<style>
+    
+</style>
 <div class="content-wrapper">
   <div class="content-header">
     <div class="container-fluid">
@@ -86,11 +88,6 @@
 
 
 
-
-
-
-
-
 <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -113,24 +110,47 @@
                                    readonly>
                         </div>
 
+                      
+
+
+
                         <div class="col-12 col-sm-6 col-md-3">
-                            <label for="container">Container #</label>
-                            <div class="input-group">
-                                <input type="text" id="container" class="form-control form-control-sm" placeholder="Scan Container">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button">Scan</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <label for="pallet">Pallet #</label>
-                            <div class="input-group">
-                                <input type="text" id="pallet" class="form-control form-control-sm" placeholder="Scan Pallet">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button">Scan</button>
-                                </div>
-                            </div>
-                        </div>
+    <label for="container">Container #</label>
+    <div class="input-group">
+        <input type="text" id="container" class="form-control form-control-sm" placeholder="Scan Container">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="scanQRCode('container')">Scan</button>
+        </div>
+    </div>
+</div>
+<div class="col-12 col-sm-6 col-md-3">
+    <label for="pallet">Pallet #</label>
+    <div class="input-group">
+        <input type="text" id="pallet" class="form-control form-control-sm" placeholder="Scan Pallet">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="scanQRCode('pallet')">Scan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Camera input and scan preview -->
+<div id="scanner" style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
+    <video id="video" width="300" height="300" style="border: 1px solid black; object-fit: cover; display: block; margin: 0 auto;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
                         <div class="col-12 col-sm-6 col-md-3">
                             <label for="position">Position</label>
                             <select id="position" class="form-control form-control-sm">
@@ -205,25 +225,32 @@
                             <input type="text" id="edit_scanned_by" class="form-control form-control-sm" readonly>
                         </div>
 
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <label for="edit_container">Container #</label>
-                            <div class="input-group">
-                                <input type="text" id="edit_container" class="form-control form-control-sm" placeholder="Edit Container #">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="editContainerScan">Scan</button>
-                                </div>
-                            </div>
-                        </div>
+                      <div class="col-12 col-sm-6 col-md-3">
+    <label for="edit_container">Container #</label>
+    <div class="input-group">
+        <input type="text" id="edit_container" class="form-control form-control-sm" placeholder="Edit Container #">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary btn-sm" type="button" id="editContainerScan">Scan</button>
+        </div>
+    </div>
+</div>
 
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <label for="edit_pallet">Pallet #</label>
-                            <div class="input-group">
-                                <input type="text" id="edit_pallet" class="form-control form-control-sm" placeholder="Edit Pallet #">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="editPalletScan">Scan</button>
-                                </div>
-                            </div>
-                        </div>
+<div class="col-12 col-sm-6 col-md-3">
+    <label for="edit_pallet">Pallet #</label>
+    <div class="input-group">
+        <input type="text" id="edit_pallet" class="form-control form-control-sm" placeholder="Edit Pallet #">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary btn-sm" type="button" id="editPalletScan">Scan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Camera input and scan preview -->
+<div id="scanner" style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
+    <video id="video" width="300" height="300" style="border: 1px solid black; object-fit: cover; display: block; margin: 0 auto;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+</div>
+
 
                         <div class="col-12 col-sm-6 col-md-3">
                             <label for="edit_position">Position</label>
@@ -264,9 +291,10 @@
                 </form>
             </div>
             <div class="modal-footer d-flex justify-content-between w-100">
-                <button type="button" class="btn btn-danger btn-sm" id="editCloseButton" style="width: 120px;">Close</button>
+                <button type="button" class="btn btn-danger btn-sm" id="editDeleteButton" style="width: 120px;">Delete</button>
+                
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-secondary btn-sm mr-2" id="editClearButton" style="width: 120px;">Clear</button>
+                   
                     <button type="button" class="btn btn-success btn-sm" id="editSaveButton" style="width: 120px;">Save Changes</button>
                 </div>
             </div>
@@ -274,15 +302,36 @@
     </div>
 </div>
 
+
+
+
+
+
+
+<script src="../../plugins/scanner/jsQR.min.js"></script>
+
 <script>
-let currentPage = 1; // Start from the first page
+let currentPage = 1;
 let isFetching = false;
 
 function fetchData() {
     if (isFetching) return;
     isFetching = true;
 
-    fetch(`../../process/inventory_view.php?page=${currentPage}`)
+    // Get search values
+    const containerNo = document.getElementById('searchBox').value.trim();
+    const palletNo = document.getElementById('searchBox').value.trim();  // Assuming you have separate fields for each search
+    
+    // Append search parameters to the URL
+    let url = `../../process/inventory_view.php?page=${currentPage}`;
+    if (containerNo) {
+        url += `&container_no=${encodeURIComponent(containerNo)}`;
+    }
+    if (palletNo) {
+        url += `&pallet_no=${encodeURIComponent(palletNo)}`;
+    }
+
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -292,7 +341,6 @@ function fetchData() {
         .then(data => {
             const tableBody = document.getElementById('admin_body');
 
-            // Check if there is data to load
             if (data.length > 0) {
                 data.forEach(item => {
                     const row = document.createElement('tr');
@@ -310,13 +358,9 @@ function fetchData() {
                     tableBody.appendChild(row);
                 });
 
-                // Increment the page number after data is loaded
                 currentPage++;
-
-                // Update total count
                 document.getElementById('totalCount').innerText = `Total Records: ${tableBody.rows.length}`;
             } else {
-                // No more data to load
                 document.getElementById('load_more_button').disabled = true;
                 document.getElementById('load_more_button').innerText = 'No more records';
             }
@@ -327,22 +371,72 @@ function fetchData() {
         });
 }
 
-// Initial data load
-fetchData();
-
-// Function to handle "Load More" button click
 function loadMoreData() {
     fetchData();
 }
 
-// Infinite scroll event listener
 const tableContainer = document.getElementById('accounts_table_res');
 tableContainer.addEventListener('scroll', () => {
     if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 10) {
-        // User has scrolled to the bottom, load more data
         loadMoreData();
     }
 });
+
+fetchData();
+
+
+
+
+function scanQRCode(field) {
+
+        document.getElementById('scanner').style.display = 'block';
+
+
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function (stream) {
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.play();
+                
+                requestAnimationFrame(scanFrame);
+            })
+            .catch(function (err) {
+                console.log("Error accessing camera: ", err);
+            });
+
+
+        function scanFrame() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (qrCode) {
+
+                    document.getElementById(field).value = qrCode.data;
+
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                    document.getElementById('scanner').style.display = 'none';
+                } else {
+                    requestAnimationFrame(scanFrame); 
+                }
+            } else {
+                requestAnimationFrame(scanFrame); 
+            }
+        }
+    }
+
+    
+
+
+
+
 
 
 

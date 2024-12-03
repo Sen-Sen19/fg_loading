@@ -102,6 +102,8 @@ function refreshDateTime() {
     datetimeDisplay.textContent = `${formattedDate} | ${formattedTime}`;
 }
 
+
+
 document.addEventListener("DOMContentLoaded", function () {
    
     fetchData();
@@ -140,6 +142,9 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('editModal').dataset.id = rowId;  
         }
     });
+
+
+
 
 
     document.getElementById('editSaveButton').addEventListener('click', function () {
@@ -211,5 +216,75 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+document.getElementById('editDeleteButton').addEventListener('click', function () {
+    const id = document.getElementById('editModal').dataset.id;
+
+    if (!id) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Record ID is missing or invalid.',
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This action will permanently delete the record.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('../../process/inventory_delete.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: id }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'The record has been deleted.',
+                        timer: 1000,
+                        showConfirmButton: false,
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to delete record.',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting record:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while deleting the record.',
+                });
+            });
+        }
+    });
+});
+
+
+document.getElementById('searchBtn').addEventListener('click', function() {
+    currentPage = 1; 
+    document.getElementById('admin_body').innerHTML = ''; 
+    fetchData();
+});
+
 
 </script>
