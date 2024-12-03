@@ -2,7 +2,7 @@
 //SESSION
 include '../../process/login.php';
 
-if (!isset($_SESSION['name'])) {
+if (!isset($_SESSION['username'])) {
   header('location:../../');
   exit;
 } else if ($_SESSION['role'] == 'user') {

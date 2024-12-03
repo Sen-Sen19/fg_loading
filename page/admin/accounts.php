@@ -138,6 +138,7 @@ include 'plugins/sidebar/admin_bar.php';
             <div class="form-group col-md-4">
               <label for="username">Username</label>
               <input type="text" class="form-control" id="username" name="username" required>
+
             </div>
           </div>
 
@@ -232,7 +233,9 @@ include 'plugins/sidebar/admin_bar.php';
     fetch('../../process/account_view.php')
   .then(response => response.json())
   .then(data => {
+
     if (data.error) {
+      console.log(data);
       console.error('Error fetching data:', data.error);
       return;
     }
@@ -244,7 +247,7 @@ include 'plugins/sidebar/admin_bar.php';
                 <td>${row.full_name}</td>
                 <td>${row.username}</td>
                 <td>${row.department}</td>
-                <td>${maskedPassword}</td>  <!-- Display masked password -->
+                <td>${maskedPassword}</td>
                 <td>${row.role}</td>
                 <td><input type="checkbox" class="select-checkbox" data-employee-id="${row.employee_id}"></td>
             `;

@@ -1,8 +1,8 @@
 
 
 <input type="hidden"
-    value="<?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : ''; ?>"
-    class="form-control" id="name">
+    value="<?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : ''; ?>"
+    class="form-control" id="username">
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
 <style>
@@ -29,7 +29,7 @@
         <img src="../../dist/img/user2.png" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="accounts.php" class="d-block"><?= htmlspecialchars($_SESSION['name']); ?></a>
+        <a href="accounts.php" class="d-block"><?= htmlspecialchars($_SESSION['username']); ?></a>
       </div>
     </div>
 

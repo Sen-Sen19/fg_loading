@@ -287,4 +287,134 @@ document.getElementById('searchBtn').addEventListener('click', function() {
 });
 
 
+
+
+
+function scanQRCode(field) {
+    document.getElementById('scanner').style.display = 'block';
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    let stream;
+
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (userStream) {
+            stream = userStream; 
+            video.srcObject = stream;
+            video.setAttribute('playsinline', true);
+            video.play();
+
+            requestAnimationFrame(scanFrame);
+        })
+        .catch(function (err) {
+            console.log("Error accessing camera: ", err);
+        });
+
+   
+    $('#formModal').on('hidden.bs.modal', function () {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        document.getElementById('scanner').style.display = 'none';  
+    });
+
+    function scanFrame() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (qrCode) {
+                document.getElementById(field).value = qrCode.data;
+             
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                document.getElementById('scanner').style.display = 'none';  
+            } else {
+                requestAnimationFrame(scanFrame);
+            }
+        } else {
+            requestAnimationFrame(scanFrame);
+        }
+    }
+}
+function scanQRCodeEdit(field) {
+    const scanner2 = document.getElementById('scanner2');
+    const video = document.getElementById('video2');
+    const canvas = document.getElementById('canvas2');
+    const context = canvas.getContext('2d');
+    let stream;
+
+
+    scanner2.style.display = 'block';
+
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (userStream) {
+            stream = userStream; 
+            video.srcObject = stream; 
+            video.setAttribute('playsinline', true);
+            video.style.display = 'block'; 
+            video.play();
+
+            video.onplaying = function() {
+                console.log('Video is playing');
+                requestAnimationFrame(scanFrame);
+            };
+        })
+        .catch(function (err) {
+            console.error("Error accessing camera: ", err);
+            alert("Error accessing camera: " + err.message);
+        });
+
+
+    $('#editModal').on('hidden.bs.modal', function () {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop()); 
+        }
+        scanner2.style.display = 'none';  
+    });
+
+    function scanFrame() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+       
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (qrCode) {
+                console.log("QR Code detected:", qrCode.data); 
+                document.getElementById(field).value = qrCode.data;
+
+             
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                scanner2.style.display = 'none';  
+            } else {
+                requestAnimationFrame(scanFrame); 
+            }
+        } else {
+            console.log("Video not ready yet."); 
+            requestAnimationFrame(scanFrame); 
+        }
+    }
+}
+
+document.getElementById('editContainerScan').addEventListener('click', function () {
+    scanQRCodeEdit('edit_container');
+});
+document.getElementById('editPalletScan').addEventListener('click', function () {
+    scanQRCodeEdit('edit_pallet');
+});
+
 </script>

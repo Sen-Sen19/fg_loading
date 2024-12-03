@@ -28,13 +28,14 @@
             <div class="card-body">
               <div class="row mb-2"></div>
               <div class="row mt-1 align-items-center">
-                <!-- Search Box -->
-                <div class="col-md-2 d-flex">
-                  <input type="text" class="form-control" id="searchBox" placeholder="Container No" style="height: 35px;">
-                </div>
-                <div class="col-md-2 d-flex">
-                  <input type="text" class="form-control" id="searchBox" placeholder="Pallet No" style="height: 35px;">
-                </div>
+             <!-- Search Box -->
+<div class="col-md-2 d-flex">
+  <input type="text" class="form-control" id="containerSearchBox" placeholder="Container No" style="height: 35px;">
+</div>
+<div class="col-md-2 d-flex">
+  <input type="text" class="form-control" id="palletSearchBox" placeholder="Pallet No" style="height: 35px;">
+</div>
+
                 <!-- Search Button -->
                 <div class="col-md-2 d-flex justify-content-center">
                   <button class="btn btn-success" id="searchBtn" style="height: 35px; width: 100%; background-color: #0c63f3; border-color: #0c63f3;">
@@ -82,9 +83,6 @@
     </div>
   </section>
 </div>
-
-
-
 
 
 
@@ -321,13 +319,12 @@
 <script>
 let currentPage = 1;
 let isFetching = false;
-
 function fetchData() {
     if (isFetching) return;
     isFetching = true;
 
-    const containerNo = document.getElementById('searchBox').value.trim();
-    const palletNo = document.getElementById('searchBox').value.trim(); 
+    const containerNo = document.getElementById('containerSearchBox').value.trim();  // Corrected ID
+    const palletNo = document.getElementById('palletSearchBox').value.trim();  // Corrected ID
 
     let url = `../../process/inventory_view.php?page=${currentPage}`;
     if (containerNo) {
@@ -377,6 +374,7 @@ function fetchData() {
         });
 }
 
+
 function loadMoreData() {
     fetchData();
 }
@@ -391,131 +389,10 @@ tableContainer.addEventListener('scroll', () => {
 fetchData();
 
 
-function scanQRCode(field) {
-    document.getElementById('scanner').style.display = 'block';
-
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-    let stream;
-
-
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(function (userStream) {
-            stream = userStream; 
-            video.srcObject = stream;
-            video.setAttribute('playsinline', true);
-            video.play();
-
-            requestAnimationFrame(scanFrame);
-        })
-        .catch(function (err) {
-            console.log("Error accessing camera: ", err);
-        });
-
-   
-    $('#formModal').on('hidden.bs.modal', function () {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-        document.getElementById('scanner').style.display = 'none';  
-    });
-
-    function scanFrame() {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            canvas.height = video.videoHeight;
-            canvas.width = video.videoWidth;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-            if (qrCode) {
-                document.getElementById(field).value = qrCode.data;
-             
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                document.getElementById('scanner').style.display = 'none';  
-            } else {
-                requestAnimationFrame(scanFrame);
-            }
-        } else {
-            requestAnimationFrame(scanFrame);
-        }
-    }
-}
-function scanQRCodeEdit(field) {
-    const scanner2 = document.getElementById('scanner2');
-    const video = document.getElementById('video2');
-    const canvas = document.getElementById('canvas2');
-    const context = canvas.getContext('2d');
-    let stream;
-
-
-    scanner2.style.display = 'block';
-
-
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(function (userStream) {
-            stream = userStream; 
-            video.srcObject = stream; 
-            video.setAttribute('playsinline', true);
-            video.style.display = 'block'; 
-            video.play();
-
-            video.onplaying = function() {
-                console.log('Video is playing');
-                requestAnimationFrame(scanFrame);
-            };
-        })
-        .catch(function (err) {
-            console.error("Error accessing camera: ", err);
-            alert("Error accessing camera: " + err.message);
-        });
-
-
-    $('#editModal').on('hidden.bs.modal', function () {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop()); 
-        }
-        scanner2.style.display = 'none';  
-    });
-
-    function scanFrame() {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-       
-            canvas.height = video.videoHeight;
-            canvas.width = video.videoWidth;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-            if (qrCode) {
-                console.log("QR Code detected:", qrCode.data); 
-                document.getElementById(field).value = qrCode.data;
-
-             
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                scanner2.style.display = 'none';  
-            } else {
-                requestAnimationFrame(scanFrame); 
-            }
-        } else {
-            console.log("Video not ready yet."); 
-            requestAnimationFrame(scanFrame); 
-        }
-    }
-}
-
-document.getElementById('editContainerScan').addEventListener('click', function () {
-    scanQRCodeEdit('edit_container');
-});
-document.getElementById('editPalletScan').addEventListener('click', function () {
-    scanQRCodeEdit('edit_pallet');
+document.getElementById('searchBtn').addEventListener('click', function() {
+    currentPage = 1; 
+    document.getElementById('admin_body').innerHTML = ''; 
+    fetchData();
 });
 
 
