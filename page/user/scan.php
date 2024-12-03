@@ -71,7 +71,7 @@
               
             </div>
             <div class="text-center mt-3">
-              <button id="load_more_button" class="btn" style="background-color:#008b02; color: white;" onclick="loadMoreData()">Load More</button>
+              <button id="load_more_button" class="btn" style="background-color:#8e8e8e; color: white;" onclick="loadMoreData()">Load More</button>
             </div>
             <div id="totalCount" style="text-align: left; margin:10px ;">
               Total Records: 0
@@ -102,11 +102,27 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <!-- Camera input and scan preview -->
+<div id="scanner" style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
+<video id="video" width="200" height="200" style="border: 1px solid black; object-fit: cover;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+</div>
+
+
+<!-- Camera input and scan preview -->
+<!-- <div id="scanner" style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center; display: flex; justify-content: center; align-items: center; height: 300px;">
+     <video id="video" width="100%" height="100%" style="border: 1px solid black; object-fit: cover;"></video>
+     <canvas id="canvas" style="display:none;"></canvas>
+</div> -->
+
+
                     <div class="form-row mb-3">
+
+                    
                     <div class="col-12 col-sm-6 col-md-3">
                             <label for="scanned_by">Scanned By</label>
                             <input type="text" id="scanned_by" class="form-control form-control-sm"
-                                   value="<?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : ''; ?>"
+                                   value="<?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : ''; ?>"
                                    readonly>
                         </div>
 
@@ -133,11 +149,6 @@
     </div>
 </div>
 
-<!-- Camera input and scan preview -->
-<div id="scanner" style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
-    <video id="video" width="300" height="300" style="border: 1px solid black; object-fit: cover; display: block; margin: 0 auto;"></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-</div>
 
 
 
@@ -209,48 +220,47 @@
 
 
 
-
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #343a40; color: white; padding: 0.5rem 1rem;">
                 <h5 class="modal-title" id="editModalLabel">Edit Record</h5>
-              
             </div>
             <div class="modal-body">
+ <!-- Camera input and scan preview -->
+<div id="scanner2" style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
+    <video id="video2" width="200" height="200" style="border: 1px solid black; object-fit: cover;"></video>
+    <canvas id="canvas2" style="display:none;"></canvas>
+</div>
+
+
                 <form>
                     <div class="form-row mb-3">
+ 
                         <div class="col-12 col-sm-6 col-md-3">
                             <label for="edit_scanned_by">Scanned By</label>
                             <input type="text" id="edit_scanned_by" class="form-control form-control-sm" readonly>
                         </div>
-
-                      <div class="col-12 col-sm-6 col-md-3">
-    <label for="edit_container">Container #</label>
-    <div class="input-group">
-        <input type="text" id="edit_container" class="form-control form-control-sm" placeholder="Edit Container #">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm" type="button" id="editContainerScan">Scan</button>
-        </div>
-    </div>
-</div>
-
-<div class="col-12 col-sm-6 col-md-3">
-    <label for="edit_pallet">Pallet #</label>
-    <div class="input-group">
-        <input type="text" id="edit_pallet" class="form-control form-control-sm" placeholder="Edit Pallet #">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm" type="button" id="editPalletScan">Scan</button>
-        </div>
-    </div>
-</div>
-
-<!-- Camera input and scan preview -->
-<div id="scanner" style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
-    <video id="video" width="300" height="300" style="border: 1px solid black; object-fit: cover; display: block; margin: 0 auto;"></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-</div>
-
+     
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <label for="edit_container">Container #</label>
+                            <div class="input-group">
+                                <input type="text" id="edit_container" class="form-control form-control-sm" placeholder="Edit Container #">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="editContainerScan">Scan</button>
+                                </div>
+                            </div>
+                        </div>
+              
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <label for="edit_pallet">Pallet #</label>
+                            <div class="input-group">
+                                <input type="text" id="edit_pallet" class="form-control form-control-sm" placeholder="Edit Pallet #">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="editPalletScan">Scan</button>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="col-12 col-sm-6 col-md-3">
                             <label for="edit_position">Position</label>
@@ -262,6 +272,7 @@
                         </div>
                     </div>
                     <div class="form-row mb-3">
+     
                         <div class="col-12 col-sm-6 col-md-3">
                             <label for="edit_poly_size">Poly Size</label>
                             <select id="edit_poly_size" class="form-control form-control-sm">
@@ -282,7 +293,7 @@
                             <label for="edit_remarks">Remarks</label>
                             <input type="text" id="edit_remarks" class="form-control form-control-sm" placeholder="Edit Remarks">
                         </div>
-
+             
                         <div class="col-12 col-sm-6 col-md-3">
                             <label for="edit_others">Others</label>
                             <input type="text" id="edit_others" class="form-control form-control-sm" placeholder="Edit Others">
@@ -292,16 +303,13 @@
             </div>
             <div class="modal-footer d-flex justify-content-between w-100">
                 <button type="button" class="btn btn-danger btn-sm" id="editDeleteButton" style="width: 120px;">Delete</button>
-                
                 <div class="d-flex justify-content-end">
-                   
                     <button type="button" class="btn btn-success btn-sm" id="editSaveButton" style="width: 120px;">Save Changes</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 
 
@@ -318,11 +326,9 @@ function fetchData() {
     if (isFetching) return;
     isFetching = true;
 
-    // Get search values
     const containerNo = document.getElementById('searchBox').value.trim();
-    const palletNo = document.getElementById('searchBox').value.trim();  // Assuming you have separate fields for each search
-    
-    // Append search parameters to the URL
+    const palletNo = document.getElementById('searchBox').value.trim(); 
+
     let url = `../../process/inventory_view.php?page=${currentPage}`;
     if (containerNo) {
         url += `&container_no=${encodeURIComponent(containerNo)}`;
@@ -385,59 +391,132 @@ tableContainer.addEventListener('scroll', () => {
 fetchData();
 
 
-
-
 function scanQRCode(field) {
+    document.getElementById('scanner').style.display = 'block';
 
-        document.getElementById('scanner').style.display = 'block';
-
-
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(function (stream) {
-                video.srcObject = stream;
-                video.setAttribute('playsinline', true);
-                video.play();
-                
-                requestAnimationFrame(scanFrame);
-            })
-            .catch(function (err) {
-                console.log("Error accessing camera: ", err);
-            });
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    let stream;
 
 
-        function scanFrame() {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                canvas.height = video.videoHeight;
-                canvas.width = video.videoWidth;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (userStream) {
+            stream = userStream; 
+            video.srcObject = stream;
+            video.setAttribute('playsinline', true);
+            video.play();
 
-                if (qrCode) {
+            requestAnimationFrame(scanFrame);
+        })
+        .catch(function (err) {
+            console.log("Error accessing camera: ", err);
+        });
 
-                    document.getElementById(field).value = qrCode.data;
+   
+    $('#formModal').on('hidden.bs.modal', function () {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        document.getElementById('scanner').style.display = 'none';  
+    });
 
-                    video.srcObject.getTracks().forEach(track => track.stop());
-                    document.getElementById('scanner').style.display = 'none';
-                } else {
-                    requestAnimationFrame(scanFrame); 
+    function scanFrame() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (qrCode) {
+                document.getElementById(field).value = qrCode.data;
+             
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
                 }
+                document.getElementById('scanner').style.display = 'none';  
+            } else {
+                requestAnimationFrame(scanFrame);
+            }
+        } else {
+            requestAnimationFrame(scanFrame);
+        }
+    }
+}
+function scanQRCodeEdit(field) {
+    const scanner2 = document.getElementById('scanner2');
+    const video = document.getElementById('video2');
+    const canvas = document.getElementById('canvas2');
+    const context = canvas.getContext('2d');
+    let stream;
+
+
+    scanner2.style.display = 'block';
+
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (userStream) {
+            stream = userStream; 
+            video.srcObject = stream; 
+            video.setAttribute('playsinline', true);
+            video.style.display = 'block'; 
+            video.play();
+
+            video.onplaying = function() {
+                console.log('Video is playing');
+                requestAnimationFrame(scanFrame);
+            };
+        })
+        .catch(function (err) {
+            console.error("Error accessing camera: ", err);
+            alert("Error accessing camera: " + err.message);
+        });
+
+
+    $('#editModal').on('hidden.bs.modal', function () {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop()); 
+        }
+        scanner2.style.display = 'none';  
+    });
+
+    function scanFrame() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+       
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (qrCode) {
+                console.log("QR Code detected:", qrCode.data); 
+                document.getElementById(field).value = qrCode.data;
+
+             
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                scanner2.style.display = 'none';  
             } else {
                 requestAnimationFrame(scanFrame); 
             }
+        } else {
+            console.log("Video not ready yet."); 
+            requestAnimationFrame(scanFrame); 
         }
     }
+}
 
-    
-
-
-
-
-
+document.getElementById('editContainerScan').addEventListener('click', function () {
+    scanQRCodeEdit('edit_container');
+});
+document.getElementById('editPalletScan').addEventListener('click', function () {
+    scanQRCodeEdit('edit_pallet');
+});
 
 
 </script>

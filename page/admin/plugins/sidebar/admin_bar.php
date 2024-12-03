@@ -1,38 +1,42 @@
-<style>
-.main-sidebar {
-  background-color: #000 !important;
-  border-right: 4px solid green;
-}
-  
 
-  .nav-link.active {
-    background-color: #d8d8d8 !important; 
-    color: #000 !important; 
-  }
-  
 
-  .nav-link.active .nav-icon {
-    color: #000 !important;
-  }
-</style>
-
+<input type="hidden"
+    value="<?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : ''; ?>"
+    class="form-control" id="name">
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
+
+<style>
+
+.main-sidebar.sidebar-custom {
+    background-color:black!important;
+}
+
+.sidebar-dark-primary {
+    background-color:black !important;
+}
+
+</style>
+  <a href="accounts.php" class="brand-link">
+    <img src="../../dist/img/box.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <span class="brand-text font-weight-light">&ensp;FG Loading &ensp;&ensp;
+
+  </a>
+
   <div class="sidebar">
 
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div class="image">
-        <img src="../../dist/img/bubonic-plague.png" class="img-circle elevation-2" alt="User Image" style="background-color: green;">
+        <img src="../../dist/img/user2.png" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="http://172.25.114.229/sen/sen.php" class="d-block" style="text-transform: uppercase;">
-          <?=htmlspecialchars($_SESSION['username']);?>
-        </a>
+        <a href="accounts.php" class="d-block"><?= htmlspecialchars($_SESSION['name']); ?></a>
       </div>
     </div>
+
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        
-        <li class="nav-item">
+
+      <li class="nav-item">
           <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/accounts.php") { ?>
           <a href="accounts.php" class="nav-link active">
           <?php } else { ?>
@@ -44,136 +48,39 @@
         </li>
 
 
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/viewer.php") { ?>
-          <a href="viewer.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="viewer.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-table"></i>
-            <p>Viewer</p>
-          </a>
-        </li>
 
         <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/search.php") { ?>
-          <a href="search.php" class="nav-link active">
+          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/history.php") { ?>
+          <a href="history.php" class="nav-link active">
           <?php } else { ?>
-          <a href="search.php" class="nav-link">
+          <a href="history.php" class="nav-link">
           <?php } ?>
-            <i class="nav-icon fas fa-search"></i>
-            <p>Seach</p>
+            <i class="nav-icon fas fa-history"></i>
+            <p>History</p>
           </a>
         </li>
 
 
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/pagination.php") { ?>
-          <a href="pagination.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="pagination.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-forward"></i>
-            <p>Pagination</p>
-          </a>
-        </li>
-
-
-
-
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/load_more.php") { ?>
-          <a href="load_more.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="load_more.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-chevron-circle-down"></i>
-            <p>Load More</p>
-          </a>
-        </li>
-
-
-
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/graph.php") { ?>
-          <a href="graph.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="graph.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-chart-bar"></i>
-            <p>Graph</p>
-          </a>
-        </li>
-
-
-
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/import.php") { ?>
-          <a href="import.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="import.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-download"></i>
-            <p>Import</p>
-          </a>
-        </li>
-
-
-
+        
         <li class="nav-item">
           <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/export.php") { ?>
           <a href="export.php" class="nav-link active">
           <?php } else { ?>
           <a href="export.php" class="nav-link">
           <?php } ?>
-            <i class="nav-icon fas fa-upload"></i>
+            <i class="nav-icon fas fa-download"></i>
             <p>Export</p>
           </a>
         </li>
 
 
 
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/sort.php") { ?>
-          <a href="sort.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="sort.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-sort"></i>
-            <p>Sort</p>
-          </a>
-        </li>
-
-
-
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/qr.php") { ?>
-          <a href="qr.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="qr.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-qrcode"></i>
-            <p>QR Code</p>
-          </a>
-        </li>
-
-
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/modal.php") { ?>
-          <a href="modal.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="modal.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-window-maximize"></i>
-            <p>Modal</p>
-          </a>
-        </li>
-        
-        
 
 
         <?php include 'logout.php'; ?>
       </ul>
     </nav>
+
   </div>
+
 </aside>

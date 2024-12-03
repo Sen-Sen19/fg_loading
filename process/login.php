@@ -1,22 +1,22 @@
-<?php
+<?php 
 session_name("fg_loading");
 session_start();
 
 include 'conn.php';
 
 if (isset($_POST['Login'])) {
-    $name = $_POST['name'];
+    $username = $_POST['username'];  // Change 'name' to 'username'
     $password = $_POST['password'];
 
-    $sql = "SELECT name, role FROM account WHERE name = ? AND password = ?";
-    $params = array($name, $password);
+    $sql = "SELECT username, role FROM account WHERE username = ? AND password = ?";  // Change 'name' to 'username'
+    $params = array($username, $password);
     $stmt = sqlsrv_prepare($conn, $sql, $params);
 
     if ($stmt && sqlsrv_execute($stmt)) {
         if (sqlsrv_has_rows($stmt)) {
             $result = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
             $role = $result['role']; 
-            $_SESSION['name'] = $name;
+            $_SESSION['username'] = $username;  // Change 'name' to 'username'
             $_SESSION['password'] = $password;
             $_SESSION['role'] = $role;
 
@@ -28,7 +28,6 @@ if (isset($_POST['Login'])) {
                 exit;
             }
         } else {
-
             echo '<script>
                     alert("Sign In Failed. Maybe an incorrect credential or account not found");
                     window.location.href = "/fg_loading/index.php";

@@ -86,7 +86,7 @@ include 'plugins/sidebar/admin_bar.php';
             </div>
 
             <div id="accounts_table_res" class="table-responsive"
-              style="height: 60vh; overflow: auto; display: inline-block; margin-top: 20px; border-top: 1px solid gray;">
+              style="height: 46vh; overflow: auto; display: inline-block; margin-top: 20px; border-top: 1px solid gray;">
               <table id="account" class="table table-sm table-head-fixed text-nowrap table-hover">
                 <thead style="text-align: center;">
                   <tr>

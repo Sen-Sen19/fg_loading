@@ -23,9 +23,9 @@ if (isset($_SESSION['name'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Web Template</title>
+  <title>FG Loading</title>
 
-  <link rel="icon" href="dist/img/logo.ico" type="image/x-icon" />
+  <link rel="icon" href="dist/img/box.png" type="image/x-icon" />
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="dist/css/font.min.css">
   <!-- Font Awesome -->
@@ -38,9 +38,9 @@ if (isset($_SESSION['name'])) {
   <div class="login-box">
     <div class="login-logo">
       <img src="dist/img/box.png" style="height:150px;">
-      <h2><b>Web<br>Template</b></h2>
+      <h2><b>FG Loading</b></h2>
     </div>
-    <!-- /.login-logo -->
+
     <div class="card">
       <div class="card-body login-card-body">
         <p class="login-box-msg"><b>Sign in to start your session</b></p>
@@ -48,7 +48,8 @@ if (isset($_SESSION['name'])) {
         <form action="process/login.php" method="POST" id="login_form">
           <div class="form-group">
             <div class="input-group">
-              <input type="text" class="form-control" id="name" name="name" placeholder="name" autocomplete="off" required>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username" autocomplete="off" required>
+
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-user"></span>

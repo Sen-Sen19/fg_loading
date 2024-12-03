@@ -8,7 +8,7 @@ document.getElementById("saveButton").addEventListener("click", () => {
         poly_size: document.getElementById("poly_size").value.trim(),
         quantity: document.getElementById("quantity").value.trim(),
         others: document.getElementById("others").value.trim(),
-        scanned_by: document.getElementById("name").value.trim(),
+        scanned_by: document.getElementById("username").value.trim(),
         date_time: new Date().toISOString()
     };
 
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('edit_others').value = rowData[6] || '';  
 
          
-            const scannedBy = document.getElementById('name').value || ''; 
+            const scannedBy = document.getElementById('username').value || ''; 
             document.getElementById('edit_scanned_by').value = scannedBy; 
 
           
