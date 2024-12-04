@@ -1,5 +1,5 @@
 <?php include 'plugins/navbar.php'; ?>
-<?php include 'plugins/sidebar/user_bar.php'; ?>
+<?php include 'plugins/sidebar/admin_bar.php'; ?>
 <style>
     #scanner {
         position: absolute;
@@ -234,7 +234,7 @@
 
 
 
-<!-- 
+
 
 
 
@@ -246,8 +246,8 @@
                 <h5 class="modal-title" id="editModalLabel">Edit Record</h5>
             </div>
             <div class="modal-body">
-                <!-- Camera input and scan preview -->
-<!-- <div id="scanner2"
+
+ <div id="scanner2"
                     style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
                     <video id="video2" width="200" height="200"
                         style="border: 1px solid black; object-fit: cover;"></video>
@@ -286,6 +286,13 @@
                                 </div>
                             </div>
                         </div>
+
+
+
+
+
+
+                        
 
                         <div class="col-12 col-sm-6 col-md-3">
                             <label for="edit_position">Position</label>
@@ -339,7 +346,7 @@
             </div>
         </div>
     </div>
-</div> -->
+</div> 
 
 
 
@@ -532,6 +539,79 @@
             document.getElementById('scanner').style.display = 'none'; 
         });
     }
+
+
+
+
+
+
+    function scanQRCodeEdit(field) {
+    const scanner2 = document.getElementById('scanner2');
+    const video = document.getElementById('video2');
+    const canvas = document.getElementById('canvas2');
+    const context = canvas.getContext('2d');
+    let stream;
+
+
+    scanner2.style.display = 'block';
+
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (userStream) {
+            stream = userStream; 
+            video.srcObject = stream; 
+            video.setAttribute('playsinline', true);
+            video.style.display = 'block'; 
+            video.play();
+
+            video.onplaying = function() {
+                console.log('Video is playing');
+                requestAnimationFrame(scanFrame);
+            };
+        })
+        .catch(function (err) {
+            console.error("Error accessing camera: ", err);
+            alert("Error accessing camera: " + err.message);
+        });
+
+
+    $('#editModal').on('hidden.bs.modal', function () {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop()); 
+        }
+        scanner2.style.display = 'none';  
+    });
+
+    function scanFrame() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+       
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (qrCode) {
+                console.log("QR Code detected:", qrCode.data); 
+                document.getElementById(field).value = qrCode.data;
+
+             
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                scanner2.style.display = 'none';  
+            } else {
+                requestAnimationFrame(scanFrame); 
+            }
+        } else {
+            console.log("Video not ready yet."); 
+            requestAnimationFrame(scanFrame); 
+        }
+    }
+}
+
 
 
 

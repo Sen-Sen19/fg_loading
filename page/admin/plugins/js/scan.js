@@ -109,115 +109,115 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchData();
 
 
-    // document.getElementById('admin_body').addEventListener('click', function (event) {
-    //     const clickedRow = event.target.closest('tr'); 
+    document.getElementById('admin_body').addEventListener('click', function (event) {
+        const clickedRow = event.target.closest('tr'); 
 
-    //     if (clickedRow) {
-    //         const rowId = clickedRow.dataset.id;  
+        if (clickedRow) {
+            const rowId = clickedRow.dataset.id;  
      
-    //         if (!rowId || rowId === 'undefined') {
-    //             alert('ID is missing or undefined!');
-    //             return;
-    //         }
+            if (!rowId || rowId === 'undefined') {
+                alert('ID is missing or undefined!');
+                return;
+            }
 
-    //         const rowData = Array.from(clickedRow.children).map(cell => cell.textContent.trim());
+            const rowData = Array.from(clickedRow.children).map(cell => cell.textContent.trim());
 
 
-    //         document.getElementById('edit_container').value = rowData[0] || ''; 
-    //         document.getElementById('edit_pallet').value = rowData[1] || '';   
-    //         document.getElementById('edit_position').value = rowData[2] || ''; 
-    //         document.getElementById('edit_poly_size').value = rowData[3] || ''; 
-    //         document.getElementById('edit_quantity').value = rowData[4] || '';  
-    //         document.getElementById('edit_remarks').value = rowData[5] || '';   
-    //         document.getElementById('edit_others').value = rowData[6] || '';  
+            document.getElementById('edit_container').value = rowData[0] || ''; 
+            document.getElementById('edit_pallet').value = rowData[1] || '';   
+            document.getElementById('edit_position').value = rowData[2] || ''; 
+            document.getElementById('edit_poly_size').value = rowData[3] || ''; 
+            document.getElementById('edit_quantity').value = rowData[4] || '';  
+            document.getElementById('edit_remarks').value = rowData[5] || '';   
+            document.getElementById('edit_others').value = rowData[6] || '';  
 
          
-    //         const scannedBy = document.getElementById('username').value || ''; 
-    //         document.getElementById('edit_scanned_by').value = scannedBy; 
+            const scannedBy = document.getElementById('username').value || ''; 
+            document.getElementById('edit_scanned_by').value = scannedBy; 
 
           
-    //         $('#editModal').modal('show');
+            $('#editModal').modal('show');
             
             
-    //         document.getElementById('editModal').dataset.id = rowId;  
-    //     }
-    // });
+            document.getElementById('editModal').dataset.id = rowId;  
+        }
+    });
 
 
 
 
 
-    // document.getElementById('editSaveButton').addEventListener('click', function () {
-    //     const container = document.getElementById('edit_container').value;
-    //     const pallet = document.getElementById('edit_pallet').value;
-    //     const position = document.getElementById('edit_position').value;
-    //     const polySize = document.getElementById('edit_poly_size').value;
-    //     const quantity = document.getElementById('edit_quantity').value;
-    //     const remarks = document.getElementById('edit_remarks').value;
-    //     const others = document.getElementById('edit_others').value;
-    //     const scannedBy = document.getElementById('edit_scanned_by').value;
-    //     const id = document.getElementById('editModal').dataset.id; 
+    document.getElementById('editSaveButton').addEventListener('click', function () {
+        const container = document.getElementById('edit_container').value;
+        const pallet = document.getElementById('edit_pallet').value;
+        const position = document.getElementById('edit_position').value;
+        const polySize = document.getElementById('edit_poly_size').value;
+        const quantity = document.getElementById('edit_quantity').value;
+        const remarks = document.getElementById('edit_remarks').value;
+        const others = document.getElementById('edit_others').value;
+        const scannedBy = document.getElementById('edit_scanned_by').value;
+        const id = document.getElementById('editModal').dataset.id; 
 
      
-    //     if (!container || !pallet || !position || !polySize || !quantity || !remarks || !others || !scannedBy) {
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'Oops...',
-    //             text: 'All fields are required!',
-    //         });
-    //         return;
-    //     }
+        if (!container || !pallet || !position || !polySize || !quantity || !remarks || !others || !scannedBy) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'All fields are required!',
+            });
+            return;
+        }
 
-    //     fetch('../../process/inventory_update.php', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify({
-    //             id: id,  
-    //             container: container,
-    //             pallet: pallet,
-    //             position: position,
-    //             polySize: polySize,
-    //             quantity: quantity,
-    //             remarks: remarks,
-    //             others: others,
-    //             scannedBy: scannedBy
-    //         })
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         if (data.success) {
-    //             Swal.fire({
-    //                 icon: 'success',
-    //                 title: 'Success!',
-    //                 timer: 1000,  
-    //                 showConfirmButton: false,  
-    //                 text: 'Record updated successfully.',
-    //             }).then(() => {
+        fetch('../../process/inventory_update.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: id,  
+                container: container,
+                pallet: pallet,
+                position: position,
+                polySize: polySize,
+                quantity: quantity,
+                remarks: remarks,
+                others: others,
+                scannedBy: scannedBy
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    timer: 1000,  
+                    showConfirmButton: false,  
+                    text: 'Record updated successfully.',
+                }).then(() => {
 
-    //                 location.reload();
-    //             });
-    //         } else {
-    //             Swal.fire({
-    //                 icon: 'error',
-    //                 title: 'Error',
-    //                 text: 'Failed to update record.',
-    //             });
-    //         }
-    //     })
-    //     .catch(error => {
-    //         console.error('Error updating record:', error);
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'Error',
-    //             text: 'An error occurred while updating the record.',
-    //         });
-    //     });
-    // });
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update record.',
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error updating record:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while updating the record.',
+            });
+        });
+    });
 });
 
-{/* 
+{
 document.getElementById('editDeleteButton').addEventListener('click', function () {
     const id = document.getElementById('editModal').dataset.id;
 
@@ -288,73 +288,7 @@ document.getElementById('searchBtn').addEventListener('click', function() {
 
 
 
-{/*  
-*}
-function scanQRCodeEdit(field) {
-    const scanner2 = document.getElementById('scanner2');
-    const video = document.getElementById('video2');
-    const canvas = document.getElementById('canvas2');
-    const context = canvas.getContext('2d');
-    let stream;
-
-
-    scanner2.style.display = 'block';
-
-
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(function (userStream) {
-            stream = userStream; 
-            video.srcObject = stream; 
-            video.setAttribute('playsinline', true);
-            video.style.display = 'block'; 
-            video.play();
-
-            video.onplaying = function() {
-                console.log('Video is playing');
-                requestAnimationFrame(scanFrame);
-            };
-        })
-        .catch(function (err) {
-            console.error("Error accessing camera: ", err);
-            alert("Error accessing camera: " + err.message);
-        });
-
-
-    $('#editModal').on('hidden.bs.modal', function () {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop()); 
-        }
-        scanner2.style.display = 'none';  
-    });
-
-    function scanFrame() {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-       
-            canvas.height = video.videoHeight;
-            canvas.width = video.videoWidth;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-            if (qrCode) {
-                console.log("QR Code detected:", qrCode.data); 
-                document.getElementById(field).value = qrCode.data;
-
-             
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                scanner2.style.display = 'none';  
-            } else {
-                requestAnimationFrame(scanFrame); 
-            }
-        } else {
-            console.log("Video not ready yet."); 
-            requestAnimationFrame(scanFrame); 
-        }
-    }
+{
 }
 
 document.getElementById('editContainerScan').addEventListener('click', function () {
@@ -363,7 +297,7 @@ document.getElementById('editContainerScan').addEventListener('click', function 
 document.getElementById('editPalletScan').addEventListener('click', function () {
     scanQRCodeEdit('edit_pallet');
 });
- */}
+ }
 
 
 
