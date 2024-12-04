@@ -286,18 +286,14 @@ document.getElementById('searchBtn').addEventListener('click', function() {
     fetchData();
 });
 
-
-
-
-
-function scanQRCode(field) {
+import { BrowserQRCodeReader, BrowserBarcodeReader } from '@zxing/library';
+function scanCode(field) {
     document.getElementById('scanner').style.display = 'block';
 
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     let stream;
-
 
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then(function (userStream) {
@@ -306,13 +302,12 @@ function scanQRCode(field) {
             video.setAttribute('playsinline', true);
             video.play();
 
-            requestAnimationFrame(scanFrame);
+            requestAnimationFrame(() => scanFrame(field));
         })
         .catch(function (err) {
             console.log("Error accessing camera: ", err);
         });
 
-   
     $('#formModal').on('hidden.bs.modal', function () {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
@@ -320,29 +315,52 @@ function scanQRCode(field) {
         document.getElementById('scanner').style.display = 'none';  
     });
 
-    function scanFrame() {
+    function scanFrame(targetField) {
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
             canvas.height = video.videoHeight;
             canvas.width = video.videoWidth;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
 
-            if (qrCode) {
-                document.getElementById(field).value = qrCode.data;
-             
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
+            if (targetField === 'container') {
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+                if (qrCode) {
+                    document.getElementById(targetField).value = qrCode.data;
+                    stopScanner();
+                } else {
+                    requestAnimationFrame(() => scanFrame(targetField));
                 }
-                document.getElementById('scanner').style.display = 'none';  
-            } else {
-                requestAnimationFrame(scanFrame);
+            } else if (targetField === 'pallet') {
+                // Barcode scanning logic
+                BarcodeDetector.getSupportedFormats().then(formats => {
+                    if (formats.includes('code_128')) {
+                        const barcodeDetector = new BarcodeDetector({ formats: ['code_128'] });
+                        barcodeDetector.detect(video).then(barcodes => {
+                            if (barcodes.length > 0) {
+                                document.getElementById(targetField).value = barcodes[0].rawValue;
+                                stopScanner();
+                            } else {
+                                requestAnimationFrame(() => scanFrame(targetField));
+                            }
+                        }).catch(err => console.log("Barcode detection error: ", err));
+                    } else {
+                        console.log("Barcode format not supported");
+                    }
+                });
             }
         } else {
-            requestAnimationFrame(scanFrame);
+            requestAnimationFrame(() => scanFrame(targetField));
         }
     }
+
+    function stopScanner() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        document.getElementById('scanner').style.display = 'none';
+    }
 }
+
 function scanQRCodeEdit(field) {
     const scanner2 = document.getElementById('scanner2');
     const video = document.getElementById('video2');

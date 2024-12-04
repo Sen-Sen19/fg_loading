@@ -29,8 +29,9 @@
         <img src="../../dist/img/user2.png" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="scan.php" class="d-block"><?= htmlspecialchars($_SESSION['username']); ?></a>
-      </div>
+    <a href="scan.php" class="d-block" style="text-transform: uppercase;"><?= htmlspecialchars($_SESSION['username']); ?></a>
+</div>
+
     </div>
 
     <nav class="mt-2">
