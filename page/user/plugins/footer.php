@@ -15,8 +15,10 @@ include '../../modals/edit_modal.php';
 ?>
 <!-- jQuery -->
 <script src="../../plugins/jquery/dist/jquery.min.js"></script>
+<script src="../../plugins/jquery/dist/jquery-3.6.4.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+
 <!-- SweetAlert2 -->
 <script type="text/javascript" src="../../plugins/sweetalert2/dist/sweetalert2.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
@@ -25,6 +27,7 @@ include '../../modals/edit_modal.php';
 </script>
 <!-- Bootstrap 4 -->
 <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
 <!-- overlayScrollbars -->
 <script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->

@@ -14,6 +14,42 @@
 .sidebar-dark-primary {
     background-color:black !important;
 }
+#scanner {
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        transform: translate(-25%, 0%);
+        z-index: 10;
+        display: none;
+        width: 200px;
+        height: 200px;
+    }
+
+    .modal-content {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .input-group {
+        margin-bottom: 0;
+    }
+
+    #container,
+    #pallet {
+        margin-bottom: 0;
+
+    }
+
+
+    .modal-content {
+        z-index: 1040;
+
+    }
+
+    #scanner {
+        z-index: 1050;
+
+    }
 
 </style>
   <a href="scan.php" class="brand-link">

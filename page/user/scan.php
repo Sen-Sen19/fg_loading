@@ -1,47 +1,11 @@
 <?php include 'plugins/navbar.php'; ?>
 <?php include 'plugins/sidebar/user_bar.php'; ?>
-<style>
-    #scanner {
-        position: absolute;
-        top: 50%;
-        left: 10%;
-        transform: translate(-25%, 0%);
-        z-index: 10;
-        display: none;
-        width: 200px;
-        height: 200px;
-    }
-    .modal-content {
-        max-height: 500px;
-        overflow-y: auto;
-    }
-    .input-group {
-        margin-bottom: 0;
-    }
 
-    #container,
-    #pallet {
-        margin-bottom: 0;
- 
-    }
-
- 
-    .modal-content {
-        z-index: 1040;
-
-    }
-
-    #scanner {
-        z-index: 1050;
-
-    }
-</style>
 <div class="content-wrapper">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6"></div>
-
             </div>
         </div>
     </div>
@@ -55,31 +19,28 @@
                             <h3 class="card-title">
                                 <i class="nav-icon fas fa-qrcode"></i>&nbsp; Scan
                             </h3>
-
                         </div>
 
                         <div class="card-body">
                             <div class="row mb-2"></div>
                             <div class="row mt-1 align-items-center">
-                                <!-- Search Box -->
-                                <div class="col-md-2 d-flex">
+
+                            <div class="col-md-2 d-flex mb-1">
                                     <input type="text" class="form-control" id="containerSearchBox"
                                         placeholder="Container No" style="height: 35px;">
                                 </div>
-                                <div class="col-md-2 d-flex">
+                                <div class="col-md-2 d-flex mb-1" >
                                     <input type="text" class="form-control" id="palletSearchBox" placeholder="Pallet No"
                                         style="height: 35px;">
                                 </div>
 
-                                <!-- Search Button -->
-                                <div class="col-md-2 d-flex justify-content-center">
+                                <div class="col-md-2 d-flex justify-content-center mb-1">
                                     <button class="btn btn-success" id="searchBtn"
                                         style="height: 35px; width: 100%; background-color: #0c63f3; border-color: #0c63f3;">
                                         <i class="fas fa-search mr-2"></i>Search
                                     </button>
                                 </div>
 
-                                <!-- Add Record Button -->
                                 <div class="col-md-2 d-flex justify-content-center">
                                     <button class="btn btn-success custom-btn" id="openModalBtn" data-toggle="modal"
                                         data-target="#formModal"
@@ -141,7 +102,6 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <!-- Camera input and scan preview -->
                     <div id="scanner"
                         style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
                         <video id="video" width="200" height="200"
@@ -349,194 +309,5 @@
 
 <script src="../../plugins/scanner/jsQR.min.js"></script>
 <script src="../../plugins/scanner/quagga.min.js"></script>
-
-
-<script>
-    let currentPage = 1;
-    let isFetching = false;
-    function fetchData() {
-        if (isFetching) return;
-        isFetching = true;
-
-        const containerNo = document.getElementById('containerSearchBox').value.trim();
-        const palletNo = document.getElementById('palletSearchBox').value.trim();
-
-        let url = `../../process/inventory_view.php?page=${currentPage}`;
-        if (containerNo) {
-            url += `&container_no=${encodeURIComponent(containerNo)}`;
-        }
-        if (palletNo) {
-            url += `&pallet_no=${encodeURIComponent(palletNo)}`;
-        }
-
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tableBody = document.getElementById('admin_body');
-
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.dataset.id = item.id;
-                        row.innerHTML = `
-                        <td>${item.container || 'N/A'}</td>
-                        <td>${item.pallet || 'N/A'}</td>
-                        <td>${item.position || 'N/A'}</td>
-                        <td>${item.poly_size || 'N/A'}</td>
-                        <td>${item.quantity || 'N/A'}</td>
-                        <td>${item.remarks || 'N/A'}</td>
-                        <td>${item.others || 'N/A'}</td>
-                        <td>${item.scanned_by || 'N/A'}</td>
-                    `;
-                        tableBody.appendChild(row);
-                    });
-
-                    currentPage++;
-                    document.getElementById('totalCount').innerText = `Total Records: ${tableBody.rows.length}`;
-                } else {
-                    document.getElementById('load_more_button').disabled = true;
-                    document.getElementById('load_more_button').innerText = 'No more records';
-                }
-            })
-            .catch(error => console.error('Error fetching data:', error))
-            .finally(() => {
-                isFetching = false;
-            });
-    }
-
-
-    function loadMoreData() {
-        fetchData();
-    }
-
-    const tableContainer = document.getElementById('accounts_table_res');
-    tableContainer.addEventListener('scroll', () => {
-        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 10) {
-            loadMoreData();
-        }
-    });
-
-    fetchData();
-
-
-    document.getElementById('searchBtn').addEventListener('click', function () {
-        currentPage = 1;
-        document.getElementById('admin_body').innerHTML = '';
-        fetchData();
-    });
-
-
-
-
-
-
-    function scanQRCode(field) {
-        document.getElementById('scanner').style.display = 'block';
-
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        let stream;
-
-
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(function (userStream) {
-                stream = userStream;
-                video.srcObject = stream;
-                video.setAttribute('playsinline', true);
-                video.play();
-
-                requestAnimationFrame(scanFrame);
-            })
-            .catch(function (err) {
-                console.log("Error accessing camera: ", err);
-            });
-
-
-        $('#formModal').on('hidden.bs.modal', function () {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-            document.getElementById('scanner').style.display = 'none';
-        });
-
-        function scanFrame() {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                canvas.height = video.videoHeight;
-                canvas.width = video.videoWidth;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-                if (qrCode) {
-                    document.getElementById(field).value = qrCode.data;
-
-                    if (stream) {
-                        stream.getTracks().forEach(track => track.stop());
-                    }
-                    document.getElementById('scanner').style.display = 'none';
-                } else {
-                    requestAnimationFrame(scanFrame);
-                }
-            } else {
-                requestAnimationFrame(scanFrame);
-            }
-        }
-    }
-    function scanBarcode(field) {
-
-        document.getElementById('scanner').style.display = 'block';
-
-
-        Quagga.init({
-            inputStream: {
-                type: "LiveStream",
-                target: document.querySelector("#scanner"), 
-                constraints: {
-                    facingMode: "environment" 
-                }
-            },
-            decoder: {
-                readers: ["code_128_reader", "ean_reader", "upc_reader"] 
-            }
-        }, function (err) {
-            if (err) {
-                console.error("Error initializing Quagga:", err);
-                return;
-            }
-            console.log("Barcode scanner initialized");
-            Quagga.start(); 
-        });
-
-
-        Quagga.onDetected(function (result) {
-            if (result.codeResult && result.codeResult.code) {
-      
-                document.getElementById(field).value = result.codeResult.code;
-
-
-                Quagga.stop();
-
-                document.getElementById('scanner').style.display = 'none';
-            }
-        });
-
-    
-        $('#formModal').on('hidden.bs.modal', function () {
-            Quagga.stop(); 
-            document.getElementById('scanner').style.display = 'none'; 
-        });
-    }
-
-
-
-</script>
-
-
 <?php include 'plugins/js/scan.js'; ?>
 <?php include 'plugins/footer.php'; ?>

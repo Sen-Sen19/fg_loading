@@ -62,17 +62,17 @@
                             <div class="row mb-2"></div>
                             <div class="row mt-1 align-items-center">
                                 <!-- Search Box -->
-                                <div class="col-md-2 d-flex">
+                                <div class="col-md-2 d-flex  mb-1">
                                     <input type="text" class="form-control" id="containerSearchBox"
                                         placeholder="Container No" style="height: 35px;">
                                 </div>
-                                <div class="col-md-2 d-flex">
+                                <div class="col-md-2 d-flex  mb-1">
                                     <input type="text" class="form-control" id="palletSearchBox" placeholder="Pallet No"
-                                        style="height: 35px;">
+                                        style="height: 35px;" >
                                 </div>
 
                                 <!-- Search Button -->
-                                <div class="col-md-2 d-flex justify-content-center">
+                                <div class="col-md-2 d-flex justify-content-center mb-1">
                                     <button class="btn btn-success" id="searchBtn"
                                         style="height: 35px; width: 100%; background-color: #0c63f3; border-color: #0c63f3;">
                                         <i class="fas fa-search mr-2"></i>Search
@@ -103,6 +103,8 @@
                                         <th>Remarks</th>
                                         <th>Others</th>
                                         <th>Scanned By</th>
+                                        <th>Destination</th>
+                                        <th>Polytainer Name</th>
                                     </tr>
                                 </thead>
                                 <tbody id="admin_body" style="text-align: center; padding:10px;">
@@ -399,6 +401,9 @@
                         <td>${item.remarks || 'N/A'}</td>
                         <td>${item.others || 'N/A'}</td>
                         <td>${item.scanned_by || 'N/A'}</td>
+                        <td>${item.destination || 'N/A'}</td>
+                         <td>${item.polytainer_name || 'N/A'}</td>
+                        
                     `;
                         tableBody.appendChild(row);
                     });

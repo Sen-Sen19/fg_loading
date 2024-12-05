@@ -24,7 +24,7 @@ if (isset($_POST['Login'])) {
                 header('location:../page/user/scan.php');
                 exit;
             } elseif ($role == 'admin') { 
-                header('location: /fg_loading/page/admin/accounts.php');
+                header('location: /fg_loading/page/admin/scanned.php');
                 exit;
             }
         } else {

@@ -1,4 +1,8 @@
+
+
 <script>
+
+    {/* ---------------------------save-------------------------------------------------------------------------------------- */}
 document.getElementById("saveButton").addEventListener("click", () => {
     const formData = {
         container: document.getElementById("container").value.trim(),
@@ -82,6 +86,11 @@ document.getElementById("saveButton").addEventListener("click", () => {
 
     xhr.send(`data=${encodeURIComponent(JSON.stringify(formData))}`);
 });
+
+
+
+    {/* ---------------------------Calendar-------------------------------------------------------------------------------------- */}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
@@ -365,7 +374,220 @@ document.getElementById('editPalletScan').addEventListener('click', function () 
 });
  */}
 
+ {/* ---------------------------fetch and load more-------------------------------------------------------------------------------------- */}
 
+ let currentPage = 1;
+    let isFetching = false;
+    function fetchData() {
+        if (isFetching) return;
+        isFetching = true;
+
+        const containerNo = document.getElementById('containerSearchBox').value.trim();
+        const palletNo = document.getElementById('palletSearchBox').value.trim();
+
+        let url = `../../process/inventory_view.php?page=${currentPage}`;
+        if (containerNo) {
+            url += `&container_no=${encodeURIComponent(containerNo)}`;
+        }
+        if (palletNo) {
+            url += `&pallet_no=${encodeURIComponent(palletNo)}`;
+        }
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById('admin_body');
+
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.dataset.id = item.id;
+                        row.innerHTML = `
+                        <td>${item.container || 'N/A'}</td>
+                        <td>${item.pallet || 'N/A'}</td>
+                        <td>${item.position || 'N/A'}</td>
+                        <td>${item.poly_size || 'N/A'}</td>
+                        <td>${item.quantity || 'N/A'}</td>
+                        <td>${item.remarks || 'N/A'}</td>
+                        <td>${item.others || 'N/A'}</td>
+                        <td>${item.scanned_by || 'N/A'}</td>
+                    `;
+                        tableBody.appendChild(row);
+                    });
+
+                    currentPage++;
+                    document.getElementById('totalCount').innerText = `Total Records: ${tableBody.rows.length}`;
+                } else {
+                    document.getElementById('load_more_button').disabled = true;
+                    document.getElementById('load_more_button').innerText = 'No more records';
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error))
+            .finally(() => {
+                isFetching = false;
+            });
+    }
+
+
+    function loadMoreData() {
+        fetchData();
+    }
+
+    const tableContainer = document.getElementById('accounts_table_res');
+    tableContainer.addEventListener('scroll', () => {
+        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 10) {
+            loadMoreData();
+        }
+    });
+
+    fetchData();
+
+
+    document.getElementById('searchBtn').addEventListener('click', function () {
+        currentPage = 1;
+        document.getElementById('admin_body').innerHTML = '';
+        fetchData();
+    });
+
+
+
+    {/* ---------------------------QR and Barcode Scanner-------------------------------------------------------------------------------------- */}
+
+
+
+    function scanQRCode(field) {
+        document.getElementById('scanner').style.display = 'block';
+
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        let stream;
+
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function (userStream) {
+                stream = userStream;
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.play();
+
+                requestAnimationFrame(scanFrame);
+            })
+            .catch(function (err) {
+                console.log("Error accessing camera: ", err);
+            });
+
+
+        $('#formModal').on('hidden.bs.modal', function () {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('scanner').style.display = 'none';
+        });
+
+        function scanFrame() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (qrCode) {
+                    document.getElementById(field).value = qrCode.data;
+
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                    document.getElementById('scanner').style.display = 'none';
+                } else {
+                    requestAnimationFrame(scanFrame);
+                }
+            } else {
+                requestAnimationFrame(scanFrame);
+            }
+        }
+    }
+    function scanBarcode(field) {
+
+        document.getElementById('scanner').style.display = 'block';
+
+
+        Quagga.init({
+            inputStream: {
+                type: "LiveStream",
+                target: document.querySelector("#scanner"), 
+                constraints: {
+                    facingMode: "environment" 
+                }
+            },
+            decoder: {
+                readers: ["code_128_reader", "ean_reader", "upc_reader"] 
+            }
+        }, function (err) {
+            if (err) {
+                console.error("Error initializing Quagga:", err);
+                return;
+            }
+            console.log("Barcode scanner initialized");
+            Quagga.start(); 
+        });
+
+
+        Quagga.onDetected(function (result) {
+            if (result.codeResult && result.codeResult.code) {
+      
+                document.getElementById(field).value = result.codeResult.code;
+
+
+                Quagga.stop();
+
+                document.getElementById('scanner').style.display = 'none';
+            }
+        });
+
+    
+        $('#formModal').on('hidden.bs.modal', function () {
+            Quagga.stop(); 
+            document.getElementById('scanner').style.display = 'none'; 
+        });
+    }
+
+ {/* ---------------------------Modal functions-------------------------------------------------------------------------------------- */}
+
+ function clearModal() {
+
+document.querySelectorAll('#formModal input').forEach(input => {
+        if (input.id !== 'scanned_by') { 
+            input.value = '';
+        }
+    });
+
+        document.querySelectorAll('#formModal select').forEach(select => {
+            select.selectedIndex = 0; 
+        });
+
+   
+        document.getElementById('scanner').style.display = 'none';
+    }
+
+    
+    document.getElementById('clearButton').addEventListener('click', () => {
+        clearModal();
+    });
+
+  
+    document.getElementById('closeButton').addEventListener('click', () => {
+        clearModal(); 
+        $('#formModal').modal('hide'); 
+    });
+
+ 
 
 
 

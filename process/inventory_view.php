@@ -3,45 +3,45 @@ include 'conn.php';
 
 header('Content-Type: application/json');
 
-// Get the current page from the GET request (default to 1 if not provided)
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$recordsPerPage = 15; // Number of records per batch
+$recordsPerPage = 15; 
 
-// Get search parameters
 $containerNo = isset($_GET['container_no']) ? $_GET['container_no'] : '';
 $palletNo = isset($_GET['pallet_no']) ? $_GET['pallet_no'] : '';
 
-// Calculate the OFFSET for SQL query
 $offset = ($page - 1) * $recordsPerPage;
 
-// Start building the query with basic pagination
-$query = "SELECT 
-           [id]
-          ,[container]
-          ,[pallet]
-          ,[position]
-          ,[remarks]
-          ,[poly_size]
-          ,[quantity]
-          ,[others]
-          ,[scanned_by]
-      FROM [fg_loading_db].[dbo].[inventory]";
+$query = "
+SELECT 
+    inv.[id],
+    inv.[container],
+    inv.[pallet],
+    inv.[position],
+    inv.[remarks],
+    inv.[poly_size],
+    inv.[quantity],
+    inv.[others],
+    inv.[scanned_by],
+    loc.[destination],
+     loc.[polytainer_name]
+FROM [fg_loading_db].[dbo].[inventory] AS inv
+LEFT JOIN [fg_loading_db].[dbo].[location] AS loc
+    ON loc.[tw_no] = inv.[container]";
 
-// Add WHERE conditions if search parameters are provided
 $conditions = [];
 if ($containerNo) {
-    $conditions[] = "container LIKE '%" . $containerNo . "%'";
+    $conditions[] = "inv.container LIKE '%" . $containerNo . "%'";
 }
 if ($palletNo) {
-    $conditions[] = "pallet LIKE '%" . $palletNo . "%'";
+    $conditions[] = "inv.pallet LIKE '%" . $palletNo . "%'";
 }
 
 if (count($conditions) > 0) {
     $query .= " WHERE " . implode(' AND ', $conditions);
 }
 
-$query .= " ORDER BY [id] DESC  -- Sort by ID in descending order (latest first)
-      OFFSET $offset ROWS FETCH NEXT $recordsPerPage ROWS ONLY"; // Pagination added
+$query .= " ORDER BY inv.[id] DESC
+      OFFSET $offset ROWS FETCH NEXT $recordsPerPage ROWS ONLY";
 
 $result = sqlsrv_query($conn, $query);
 
