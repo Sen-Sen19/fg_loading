@@ -9,10 +9,10 @@ if(isset($_SESSION['login_error'])) {
 
 if (isset($_SESSION['name'])) {
   if ($_SESSION['role'] == 'admin') {
-     header('location: page/admin/dashboard.php');
+     header('location: page/admin/scanned.php');
      exit;
  }elseif($_SESSION['role'] == 'user'){
-     header('location: page/user/dashboard.php');
+     header('location: page/user/scan.php');
      exit;
  }
 }

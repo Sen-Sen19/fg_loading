@@ -23,7 +23,10 @@ SELECT
     inv.[others],
     inv.[scanned_by],
     loc.[destination],
-     loc.[polytainer_name]
+     inv.[status],
+          inv.[delete],
+          inv.[additional],
+        loc.[polytainer_name]
 FROM [fg_loading_db].[dbo].[inventory] AS inv
 LEFT JOIN [fg_loading_db].[dbo].[location] AS loc
     ON loc.[tw_no] = inv.[container]";

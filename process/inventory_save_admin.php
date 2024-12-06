@@ -15,13 +15,15 @@ if (isset($_POST['data'])) {
     $others = $data['others'];
     $scanned_by = $data['scanned_by'];  
     $date_time = $data['date_time']; 
+    $additional = $data['additional']; 
 
-    $sql = "INSERT INTO [dbo].[inventory] ([container], [pallet], [position], [remarks], [poly_size], [quantity], [others], [scanned_by], [date_time]) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO [dbo].[inventory] ([container], [pallet], [position], [remarks], [poly_size], [quantity], [others], [scanned_by], [date_time],[additional]) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)";
 
-    $params = array($container, $pallet, $position, $remarks, $poly_size, $quantity, $others, $scanned_by, $date_time);
+    $params = array($container, $pallet, $position, $remarks, $poly_size, $quantity, $others, $scanned_by, $date_time, $additional);
     $stmt = sqlsrv_query($conn, $sql, $params);
 
+    // Return JSON response
     if ($stmt) {
         echo json_encode(['success' => true, 'message' => 'Record saved successfully!']);
     } else {

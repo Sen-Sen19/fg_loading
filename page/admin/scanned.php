@@ -35,6 +35,44 @@
         z-index: 1050;
 
     }
+
+
+
+    #scanner2 {
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        transform: translate(-25%, 0%);
+        z-index: 10;
+        display: none;
+        width: 200px;
+        height: 200px;
+    }
+    .modal-content {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    .input-group {
+        margin-bottom: 0;
+    }
+
+    #container2,
+    #pallet2 {
+        margin-bottom: 0;
+ 
+    }
+
+ 
+    .modal-content {
+        z-index: 1040;
+
+    }
+
+    #scanner2 {
+        z-index: 1050;
+
+    }
+</style>
 </style>
 <div class="content-wrapper">
     <div class="content-header">
@@ -105,6 +143,8 @@
                                         <th>Scanned By</th>
                                         <th>Destination</th>
                                         <th>Polytainer Name</th>
+                                      
+                                        
                                     </tr>
                                 </thead>
                                 <tbody id="admin_body" style="text-align: center; padding:10px;">
@@ -226,6 +266,7 @@
                     <button type="button" class="btn btn-success btn-sm" id="saveButton"
                         style="width: 120px;">Save</button>
                 </div>
+                <input type="hidden" id="additional" value="Additional">
             </div>
 
         </div>
@@ -249,46 +290,40 @@
             </div>
             <div class="modal-body">
 
- <div id="scanner2"
-                    style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
-                    <video id="video2" width="200" height="200"
-                        style="border: 1px solid black; object-fit: cover;"></video>
-                    <canvas id="canvas2" style="display:none;"></canvas>
+            <div id="scanner2"
+    style="display:none; position: relative; max-width: 200px; margin: 0 auto; text-align: center;">
+    <video id="video2" width="200" height="200" style="border: 1px solid black; object-fit: cover;"></video>
+    <canvas id="canvas2" style="display:none;"></canvas>
+</div>
+<form>
+    <div class="form-row mb-3">
+        <div class="col-12 col-sm-6 col-md-3">
+            <label for="edit_scanned_by">Scanned By</label>
+            <input type="text" id="edit_scanned_by" class="form-control form-control-sm" readonly
+                style="text-transform: uppercase;">
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <label for="edit_container">Container #</label>
+            <div class="input-group">
+                <input type="text" id="edit_container" class="form-control form-control-sm" placeholder="Edit Container #">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" id="editContainerScan"
+                        onclick="scanQRCodeEdit('edit_container')">Scan</button>
                 </div>
+            </div>
+        </div>
 
-
-                <form>
-                    <div class="form-row mb-3">
-
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <label for="edit_scanned_by">Scanned By</label>
-                            <input type="text" id="edit_scanned_by" class="form-control form-control-sm" readonly style="text-transform: uppercase;">
-                        </div>
-
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <label for="edit_container">Container #</label>
-                            <div class="input-group">
-                                <input type="text" id="edit_container" class="form-control form-control-sm"
-                                    placeholder="Edit Container #">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button"
-                                        id="editContainerScan">Scan</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <label for="edit_pallet">Pallet #</label>
-                            <div class="input-group">
-                                <input type="text" id="edit_pallet" class="form-control form-control-sm"
-                                    placeholder="Edit Pallet #">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button"
-                                        id="editPalletScan">Scan</button>
-                                </div>
-                            </div>
-                        </div>
-
+        <div class="col-12 col-sm-6 col-md-3">
+            <label for="edit_pallet">Pallet #</label>
+            <div class="input-group">
+                <input type="text" id="edit_pallet" class="form-control form-control-sm" placeholder="Edit Pallet #">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" id="editPalletScan"
+                        onclick="scanBarcodeEdit('edit_pallet')">Scan</button>
+                </div>
+            </div>
+        </div>
 
 
 
@@ -345,6 +380,7 @@
                     <button type="button" class="btn btn-success btn-sm" id="editSaveButton" style="width: 120px;">Save
                         Changes</button>
                 </div>
+                <input type="hidden" id="edit_status" value="Changed">
             </div>
         </div>
     </div>
@@ -364,35 +400,52 @@
     let currentPage = 1;
     let isFetching = false;
     function fetchData() {
-        if (isFetching) return;
-        isFetching = true;
+    if (isFetching) return;
+    isFetching = true;
 
-        const containerNo = document.getElementById('containerSearchBox').value.trim();
-        const palletNo = document.getElementById('palletSearchBox').value.trim();
+    const containerNo = document.getElementById('containerSearchBox').value.trim();
+    const palletNo = document.getElementById('palletSearchBox').value.trim();
 
-        let url = `../../process/inventory_view.php?page=${currentPage}`;
-        if (containerNo) {
-            url += `&container_no=${encodeURIComponent(containerNo)}`;
-        }
-        if (palletNo) {
-            url += `&pallet_no=${encodeURIComponent(palletNo)}`;
-        }
+    let url = `../../process/inventory_view.php?page=${currentPage}`;
+    if (containerNo) {
+        url += `&container_no=${encodeURIComponent(containerNo)}`;
+    }
+    if (palletNo) {
+        url += `&pallet_no=${encodeURIComponent(palletNo)}`;
+    }
 
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tableBody = document.getElementById('admin_body');
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const tableBody = document.getElementById('admin_body');
 
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.dataset.id = item.id;
-                        row.innerHTML = `
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.dataset.id = item.id;
+
+
+                    if (item.status === 'Changed') {
+                        row.style.backgroundColor = 'rgba(62,254,97, 0.5)';
+
+                    }
+
+                    if (item.additional === 'Additional') {
+                        row.style.backgroundColor = 'rgba(138,98,218, 0.5)';
+
+                    }
+                    
+                    if (item.delete === 'Deleted') {
+                        row.style.backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Red with 50% opacity
+
+                    }
+
+                    row.innerHTML = `
                         <td>${item.container || 'N/A'}</td>
                         <td>${item.pallet || 'N/A'}</td>
                         <td>${item.position || 'N/A'}</td>
@@ -402,24 +455,24 @@
                         <td>${item.others || 'N/A'}</td>
                         <td>${item.scanned_by || 'N/A'}</td>
                         <td>${item.destination || 'N/A'}</td>
-                         <td>${item.polytainer_name || 'N/A'}</td>
-                        
+                        <td>${item.polytainer_name || 'N/A'}</td>
+                       
                     `;
-                        tableBody.appendChild(row);
-                    });
+                    tableBody.appendChild(row);
+                });
 
-                    currentPage++;
-                    document.getElementById('totalCount').innerText = `Total Records: ${tableBody.rows.length}`;
-                } else {
-                    document.getElementById('load_more_button').disabled = true;
-                    document.getElementById('load_more_button').innerText = 'No more records';
-                }
-            })
-            .catch(error => console.error('Error fetching data:', error))
-            .finally(() => {
-                isFetching = false;
-            });
-    }
+                currentPage++;
+                document.getElementById('totalCount').innerText = `Total Records: ${tableBody.rows.length}`;
+            } else {
+                document.getElementById('load_more_button').disabled = true;
+                document.getElementById('load_more_button').innerText = 'No more records';
+            }
+        })
+        .catch(error => console.error('Error fetching data:', error))
+        .finally(() => {
+            isFetching = false;
+        });
+}
 
 
     function loadMoreData() {
@@ -442,180 +495,6 @@
         fetchData();
     });
 
-
-
-
-
-
-    function scanQRCode(field) {
-        document.getElementById('scanner').style.display = 'block';
-
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        let stream;
-
-
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(function (userStream) {
-                stream = userStream;
-                video.srcObject = stream;
-                video.setAttribute('playsinline', true);
-                video.play();
-
-                requestAnimationFrame(scanFrame);
-            })
-            .catch(function (err) {
-                console.log("Error accessing camera: ", err);
-            });
-
-
-        $('#formModal').on('hidden.bs.modal', function () {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-            document.getElementById('scanner').style.display = 'none';
-        });
-
-        function scanFrame() {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                canvas.height = video.videoHeight;
-                canvas.width = video.videoWidth;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-                if (qrCode) {
-                    document.getElementById(field).value = qrCode.data;
-
-                    if (stream) {
-                        stream.getTracks().forEach(track => track.stop());
-                    }
-                    document.getElementById('scanner').style.display = 'none';
-                } else {
-                    requestAnimationFrame(scanFrame);
-                }
-            } else {
-                requestAnimationFrame(scanFrame);
-            }
-        }
-    }
-    function scanBarcode(field) {
-
-        document.getElementById('scanner').style.display = 'block';
-
-
-        Quagga.init({
-            inputStream: {
-                type: "LiveStream",
-                target: document.querySelector("#scanner"), 
-                constraints: {
-                    facingMode: "environment" 
-                }
-            },
-            decoder: {
-                readers: ["code_128_reader", "ean_reader", "upc_reader"] 
-            }
-        }, function (err) {
-            if (err) {
-                console.error("Error initializing Quagga:", err);
-                return;
-            }
-            console.log("Barcode scanner initialized");
-            Quagga.start(); 
-        });
-
-
-        Quagga.onDetected(function (result) {
-            if (result.codeResult && result.codeResult.code) {
-      
-                document.getElementById(field).value = result.codeResult.code;
-
-
-                Quagga.stop();
-
-                document.getElementById('scanner').style.display = 'none';
-            }
-        });
-
-    
-        $('#formModal').on('hidden.bs.modal', function () {
-            Quagga.stop(); 
-            document.getElementById('scanner').style.display = 'none'; 
-        });
-    }
-
-
-
-
-
-
-    function scanQRCodeEdit(field) {
-    const scanner2 = document.getElementById('scanner2');
-    const video = document.getElementById('video2');
-    const canvas = document.getElementById('canvas2');
-    const context = canvas.getContext('2d');
-    let stream;
-
-
-    scanner2.style.display = 'block';
-
-
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(function (userStream) {
-            stream = userStream; 
-            video.srcObject = stream; 
-            video.setAttribute('playsinline', true);
-            video.style.display = 'block'; 
-            video.play();
-
-            video.onplaying = function() {
-                console.log('Video is playing');
-                requestAnimationFrame(scanFrame);
-            };
-        })
-        .catch(function (err) {
-            console.error("Error accessing camera: ", err);
-            alert("Error accessing camera: " + err.message);
-        });
-
-
-    $('#editModal').on('hidden.bs.modal', function () {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop()); 
-        }
-        scanner2.style.display = 'none';  
-    });
-
-    function scanFrame() {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-       
-            canvas.height = video.videoHeight;
-            canvas.width = video.videoWidth;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-            if (qrCode) {
-                console.log("QR Code detected:", qrCode.data); 
-                document.getElementById(field).value = qrCode.data;
-
-             
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                scanner2.style.display = 'none';  
-            } else {
-                requestAnimationFrame(scanFrame); 
-            }
-        } else {
-            console.log("Video not ready yet."); 
-            requestAnimationFrame(scanFrame); 
-        }
-    }
-}
 
 
 

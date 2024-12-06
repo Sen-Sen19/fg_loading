@@ -1,4 +1,5 @@
 <script>
+    {/* -------------------------------save------------------------------------------------ */}
 document.getElementById("saveButton").addEventListener("click", () => {
     const formData = {
         container: document.getElementById("container").value.trim(),
@@ -9,11 +10,13 @@ document.getElementById("saveButton").addEventListener("click", () => {
         quantity: document.getElementById("quantity").value.trim(),
         others: document.getElementById("others").value.trim(),
         scanned_by: document.getElementById("username").value.trim(),
+        scanned_by: document.getElementById("username").value.trim(),
+        additional: document.getElementById("additional").value.trim(),
         date_time: new Date().toISOString()
     };
 
  
-    const requiredFields = ['container', 'pallet', 'position', 'poly_size', 'quantity', 'scanned_by'];
+    const requiredFields = ['container', 'pallet', 'position', 'poly_size', 'quantity', 'scanned_by','additional'];
     if (requiredFields.some(field => formData[field] === "")) {
         Swal.fire({
             title: 'Error!',
@@ -25,7 +28,7 @@ document.getElementById("saveButton").addEventListener("click", () => {
     }
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "../../process/inventory_save.php", true);
+    xhr.open("POST", "../../process/inventory_save_admin.php", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
     xhr.onload = () => {
@@ -82,7 +85,7 @@ document.getElementById("saveButton").addEventListener("click", () => {
 
     xhr.send(`data=${encodeURIComponent(JSON.stringify(formData))}`);
 });
-
+{/* ----------------------------------------date------------------------------------------- */}
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
     refreshDateTime(); 
@@ -108,6 +111,9 @@ document.addEventListener("DOMContentLoaded", function () {
    
     fetchData();
 
+
+
+    // ---------------------------------------------edit------------------------------------------------
 
     document.getElementById('admin_body').addEventListener('click', function (event) {
         const clickedRow = event.target.closest('tr'); 
@@ -145,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-
+// -------------------------------------------edit save-------------------------------------------------
 
     document.getElementById('editSaveButton').addEventListener('click', function () {
         const container = document.getElementById('edit_container').value;
@@ -157,7 +163,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const others = document.getElementById('edit_others').value;
         const scannedBy = document.getElementById('edit_scanned_by').value;
         const id = document.getElementById('editModal').dataset.id; 
+        const editStatus = document.getElementById('edit_status').value; // Getting the value of edit_status
 
+        console.log("edit_status:", editStatus);
      
         if (!container || !pallet || !position || !polySize || !quantity || !remarks || !others || !scannedBy) {
             Swal.fire({
@@ -182,7 +190,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 quantity: quantity,
                 remarks: remarks,
                 others: others,
-                scannedBy: scannedBy
+                scannedBy: scannedBy,
+                edit_status:editStatus
             })
         })
         .then(response => response.json())
@@ -218,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 {
+    // -----------------------------------------------delete-----------------------------------------
 document.getElementById('editDeleteButton').addEventListener('click', function () {
     const id = document.getElementById('editModal').dataset.id;
 
@@ -298,6 +308,206 @@ document.getElementById('editPalletScan').addEventListener('click', function () 
     scanQRCodeEdit('edit_pallet');
 });
  }
+
+
+
+{/* -------------------------------------------scanner------------------------------------------- */}
+
+
+function scanQRCode(field) {
+        document.getElementById('scanner').style.display = 'block';
+
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        let stream;
+
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function (userStream) {
+                stream = userStream;
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.play();
+
+                requestAnimationFrame(scanFrame);
+            })
+            .catch(function (err) {
+                console.log("Error accessing camera: ", err);
+            });
+
+
+        $('#formModal').on('hidden.bs.modal', function () {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('scanner').style.display = 'none';
+        });
+
+        function scanFrame() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (qrCode) {
+                    document.getElementById(field).value = qrCode.data;
+
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                    document.getElementById('scanner').style.display = 'none';
+                } else {
+                    requestAnimationFrame(scanFrame);
+                }
+            } else {
+                requestAnimationFrame(scanFrame);
+            }
+        }
+    }
+    function scanBarcode(field) {
+
+        document.getElementById('scanner').style.display = 'block';
+
+
+        Quagga.init({
+            inputStream: {
+                type: "LiveStream",
+                target: document.querySelector("#scanner"), 
+                constraints: {
+                    facingMode: "environment" 
+                }
+            },
+            decoder: {
+                readers: ["code_128_reader", "ean_reader", "upc_reader"] 
+            }
+        }, function (err) {
+            if (err) {
+                console.error("Error initializing Quagga:", err);
+                return;
+            }
+            console.log("Barcode scanner initialized");
+            Quagga.start(); 
+        });
+
+
+        Quagga.onDetected(function (result) {
+            if (result.codeResult && result.codeResult.code) {
+      
+                document.getElementById(field).value = result.codeResult.code;
+
+
+                Quagga.stop();
+
+                document.getElementById('scanner').style.display = 'none';
+            }
+        });
+
+    
+        $('#formModal').on('hidden.bs.modal', function () {
+            Quagga.stop(); 
+            document.getElementById('scanner').style.display = 'none'; 
+        });
+    }
+
+
+
+
+   function scanQRCodeEdit(field) {
+        const scanner2 = document.getElementById('scanner2');
+        const video = document.getElementById('video2');
+        const canvas = document.getElementById('canvas2');
+        const context = canvas.getContext('2d');
+        let stream;
+
+        scanner2.style.display = 'block';
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(function (userStream) {
+                stream = userStream;
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.style.display = 'block';
+                video.play();
+
+                video.onplaying = function () {
+                    requestAnimationFrame(scanFrame);
+                };
+            })
+            .catch(function (err) {
+                alert("Error accessing camera: " + err.message);
+            });
+
+        $('#editModal').on('hidden.bs.modal', function () {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            scanner2.style.display = 'none';
+        });
+
+        function scanFrame() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (qrCode) {
+                    document.getElementById(field).value = qrCode.data;
+
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                    scanner2.style.display = 'none';
+                } else {
+                    requestAnimationFrame(scanFrame);
+                }
+            } else {
+                requestAnimationFrame(scanFrame);
+            }
+        }
+    }
+
+
+    function scanBarcodeEdit(field) {
+        const scanner2 = document.getElementById('scanner2');
+        scanner2.style.display = 'block';
+
+        Quagga.init({
+            inputStream: {
+                type: "LiveStream",
+                target: scanner2,
+                constraints: {
+                    facingMode: "environment"
+                }
+            },
+            decoder: {
+                readers: ["code_128_reader", "ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"]
+            }
+        }, function (err) {
+            if (err) {
+                alert("Error initializing Quagga: " + err.message);
+                scanner2.style.display = 'none';
+                return;
+            }
+            Quagga.start();
+        });
+
+        Quagga.onDetected(function (data) {
+            document.getElementById(field).value = data.codeResult.code;
+            Quagga.stop();
+            scanner2.style.display = 'none';
+        });
+
+        $('#editModal').on('hidden.bs.modal', function () {
+            Quagga.stop();
+            scanner2.style.display = 'none';
+        });
+    }
 
 
 
