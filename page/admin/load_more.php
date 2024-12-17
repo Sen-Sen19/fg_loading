@@ -1,5 +1,5 @@
 <?php include 'plugins/navbar.php';
-include 'plugins/sidebar/admin_bar.php';?>
+include 'plugins/sidebar/admin_bar.php'; ?>
 <div class="content-wrapper">
   <div class="content-header">
     <div class="container-fluid">
@@ -41,11 +41,12 @@ include 'plugins/sidebar/admin_bar.php';?>
               </table>
             </div>
             <div class="text-center mt-3">
-              <button id="load_more_button" class="btn" style="background-color:#008b02; color: white;" onclick="loadMoreData()">Load More</button>
+              <button id="load_more_button" class="btn" style="background-color:#008b02; color: white;"
+                onclick="loadMoreData()">Load More</button>
             </div>
             <div id="totalCount" style="text-align: left; margin:10px ;">
-  Total Records: 0
-</div>
+              Total Records: 0
+            </div>
           </div>
         </div>
       </div>
@@ -54,65 +55,65 @@ include 'plugins/sidebar/admin_bar.php';?>
 </div>
 
 <script>
-const adminBody = document.getElementById('admin_body');
-const accountsTableRes = document.getElementById('accounts_table_res');
-const loadMoreButton = document.getElementById('load_more_button');
-const totalCountElement = document.getElementById('totalCount');
-let offset = 0;
-const limit = 20; 
-let loading = false;
+  const adminBody = document.getElementById('admin_body');
+  const accountsTableRes = document.getElementById('accounts_table_res');
+  const loadMoreButton = document.getElementById('load_more_button');
+  const totalCountElement = document.getElementById('totalCount');
+  let offset = 0;
+  const limit = 20;
+  let loading = false;
 
-function loadMoreData() {
-  if (loading) return; 
-  loading = true;
-  loadMoreButton.disabled = true;
+  function loadMoreData() {
+    if (loading) return;
+    loading = true;
+    loadMoreButton.disabled = true;
 
-  fetch(`../../process/fetch_employee_load_more.php?offset=${offset}&limit=${limit}`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.data.length === 0) {
-        console.log('No more data to load.');
-        loadMoreButton.disabled = true;
-        return;
-      }
-
-
-      totalCountElement.innerHTML = `Total Records: ${data.totalCount}`;
+    fetch(`../../process/fetch_employee_load_more.php?offset=${offset}&limit=${limit}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.data.length === 0) {
+          console.log('No more data to load.');
+          loadMoreButton.disabled = true;
+          return;
+        }
 
 
-      data.data.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+        totalCountElement.innerHTML = `Total Records: ${data.totalCount}`;
+
+
+        data.data.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
           <td>${row.EmployeeNo}</td>
           <td>${row.Username}</td>
           <td>${row.FullName}</td>
           <td>${row.Section}</td>
           <td>${row.UserType}</td>
         `;
-        adminBody.appendChild(tr);
+          adminBody.appendChild(tr);
+        });
+
+        offset += limit;
+        loading = false;
+        loadMoreButton.disabled = false;
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        loading = false;
+        loadMoreButton.disabled = false;
       });
-
-      offset += limit; 
-      loading = false;
-      loadMoreButton.disabled = false; 
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-      loading = false;
-      loadMoreButton.disabled = false;
-    });
-}
-
-accountsTableRes.addEventListener('scroll', () => {
-  if (
-    accountsTableRes.scrollTop + accountsTableRes.clientHeight >=
-    accountsTableRes.scrollHeight - 20
-  ) {
-    loadMoreData(); 
   }
-});
 
-loadMoreData();
+  accountsTableRes.addEventListener('scroll', () => {
+    if (
+      accountsTableRes.scrollTop + accountsTableRes.clientHeight >=
+      accountsTableRes.scrollHeight - 20
+    ) {
+      loadMoreData();
+    }
+  });
+
+  loadMoreData();
 
 </script>
 

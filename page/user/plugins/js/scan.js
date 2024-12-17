@@ -1,23 +1,25 @@
 
 
 <script>
+document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
-    {/* ---------------------------save-------------------------------------------------------------------------------------- */}
+console.log(document.getElementById('date').value); 
+
+
+{/* ---------------------------save-------------------------------------------------------------------------------------- */}
 document.getElementById("saveButton").addEventListener("click", () => {
-    const formData = {
-        container: document.getElementById("container").value.trim(),
-        pallet: document.getElementById("pallet").value.trim(),
-        position: document.getElementById("position").value.trim(),
-        remarks: document.getElementById("remarks").value.trim(),
-        poly_size: document.getElementById("poly_size").value.trim(),
-        quantity: document.getElementById("quantity").value.trim(),
-        others: document.getElementById("others").value.trim(),
-        scanned_by: document.getElementById("username").value.trim(),
-        date_time: new Date().toISOString()
-    };
+const formData = {
+    container_no: document.getElementById("container_no").value.trim(),
+    position: document.getElementById("position").value.trim(),
+    pallet_no: document.getElementById("pallet_no").value.trim(),
+    poly_size: document.getElementById("poly_size").value.trim(),
+    remarks: document.getElementById("remarks").value.trim(),
+    poly_qty: document.getElementById("poly_qty").value.trim(),
+    id_scanned: document.getElementById("id_scanned").value.trim(),
+    dt: document.getElementById("date").value 
+};
 
- 
-    const requiredFields = ['container', 'pallet', 'position', 'poly_size', 'quantity', 'scanned_by'];
+    const requiredFields = ['container_no', 'pallet_no','position', 'poly_size', 'poly_qty', 'id_scanned', 'dt', 'remarks'];
     if (requiredFields.some(field => formData[field] === "")) {
         Swal.fire({
             title: 'Error!',
@@ -30,7 +32,7 @@ document.getElementById("saveButton").addEventListener("click", () => {
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "../../process/inventory_save.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onload = () => {
         if (xhr.status === 200) {
@@ -84,9 +86,8 @@ document.getElementById("saveButton").addEventListener("click", () => {
         });
     };
 
-    xhr.send(`data=${encodeURIComponent(JSON.stringify(formData))}`);
+    xhr.send(JSON.stringify(formData)); // Send the form data as JSON
 });
-
 
 
     {/* ---------------------------Calendar-------------------------------------------------------------------------------------- */}
@@ -225,7 +226,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //     });
     // });
 });
-
 {/* 
 document.getElementById('editDeleteButton').addEventListener('click', function () {
     const id = document.getElementById('editModal').dataset.id;
@@ -375,85 +375,7 @@ document.getElementById('editPalletScan').addEventListener('click', function () 
  */}
 
  {/* ---------------------------fetch and load more-------------------------------------------------------------------------------------- */}
-
- let currentPage = 1;
-    let isFetching = false;
-    function fetchData() {
-        if (isFetching) return;
-        isFetching = true;
-
-        const containerNo = document.getElementById('containerSearchBox').value.trim();
-        const palletNo = document.getElementById('palletSearchBox').value.trim();
-
-        let url = `../../process/inventory_view.php?page=${currentPage}`;
-        if (containerNo) {
-            url += `&container_no=${encodeURIComponent(containerNo)}`;
-        }
-        if (palletNo) {
-            url += `&pallet_no=${encodeURIComponent(palletNo)}`;
-        }
-
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tableBody = document.getElementById('admin_body');
-
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.dataset.id = item.id;
-                        row.innerHTML = `
-                        <td>${item.container || 'N/A'}</td>
-                        <td>${item.pallet || 'N/A'}</td>
-                        <td>${item.position || 'N/A'}</td>
-                        <td>${item.poly_size || 'N/A'}</td>
-                        <td>${item.quantity || 'N/A'}</td>
-                        <td>${item.remarks || 'N/A'}</td>
-                        <td>${item.others || 'N/A'}</td>
-                        <td>${item.scanned_by || 'N/A'}</td>
-                    `;
-                        tableBody.appendChild(row);
-                    });
-
-                    currentPage++;
-                    document.getElementById('totalCount').innerText = `Total Records: ${tableBody.rows.length}`;
-                } else {
-                    document.getElementById('load_more_button').disabled = true;
-                    document.getElementById('load_more_button').innerText = 'No more records';
-                }
-            })
-            .catch(error => console.error('Error fetching data:', error))
-            .finally(() => {
-                isFetching = false;
-            });
-    }
-
-
-    function loadMoreData() {
-        fetchData();
-    }
-
-    const tableContainer = document.getElementById('accounts_table_res');
-    tableContainer.addEventListener('scroll', () => {
-        if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 10) {
-            loadMoreData();
-        }
-    });
-
-    fetchData();
-
-
-    document.getElementById('searchBtn').addEventListener('click', function () {
-        currentPage = 1;
-        document.getElementById('admin_body').innerHTML = '';
-        fetchData();
-    });
-
+ 
 
 
     {/* ---------------------------QR and Barcode Scanner-------------------------------------------------------------------------------------- */}
@@ -563,7 +485,7 @@ document.getElementById('editPalletScan').addEventListener('click', function () 
  function clearModal() {
 
 document.querySelectorAll('#formModal input').forEach(input => {
-        if (input.id !== 'scanned_by') { 
+        if (input.id !== 'scanned_by' && input.id !== 'date') { 
             input.value = '';
         }
     });
@@ -587,7 +509,132 @@ document.querySelectorAll('#formModal input').forEach(input => {
         $('#formModal').modal('hide'); 
     });
 
- 
+
+
+
+function scanFrame() {
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+        if (qrCode) {
+            document.getElementById(field).value = qrCode.data;
+
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('editscanner').style.display = 'none';
+        } else {
+            requestAnimationFrame(scanFrame);
+        }
+    } else {
+        requestAnimationFrame(scanFrame);
+    }
+}
+
+function editscanQRCode(field) {
+    document.getElementById('editscanner').style.display = 'block';
+
+    const video = document.getElementById('video2');  // Correct ID for the video element
+    const canvas = document.getElementById('canvas2');  // Correct ID for the canvas element
+    const context = canvas.getContext('2d');
+    let stream;
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (userStream) {
+            stream = userStream;
+            video.srcObject = stream;
+            video.setAttribute('playsinline', true);
+            video.play();
+
+            requestAnimationFrame(scanFrame);
+        })
+        .catch(function (err) {
+            console.log("Error accessing camera: ", err);
+        });
+
+    $('#editFormModal').on('hidden.bs.modal', function () {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        document.getElementById('editscanner').style.display = 'none';
+    });
+
+    function scanFrame() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+            if (qrCode) {
+                document.getElementById(field).value = qrCode.data;
+
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                document.getElementById('editscanner').style.display = 'none';
+            } else {
+                requestAnimationFrame(scanFrame);
+            }
+        } else {
+            requestAnimationFrame(scanFrame);
+        }
+    }
+}
+
+function editscanBarcode(field) {
+    // Hide the previous scanner to prepare for the new scan
+    document.getElementById('editscanner').style.display = 'block';  // Show scanner
+
+    // Stop any ongoing scanning if it's still running
+    Quagga.stop();
+
+    // Reinitialize Quagga for the new barcode field
+    Quagga.init({
+        inputStream: {
+            type: "LiveStream",
+            target: document.querySelector("#editscanner"), // The camera should target the scanner display
+            constraints: {
+                facingMode: "environment"
+            }
+        },
+        decoder: {
+            readers: ["code_128_reader", "ean_reader", "upc_reader"]
+        }
+    }, function (err) {
+        if (err) {
+            console.error("Error initializing Quagga:", err);
+            return;
+        }
+        console.log("Barcode scanner initialized for new field");
+        Quagga.start();  // Start the scanner again
+    });
+
+    // Handle when a barcode is detected
+    Quagga.onDetected(function (result) {
+        if (result.codeResult && result.codeResult.code) {
+            // Set the detected barcode value to the corresponding input field
+            document.getElementById(field).value = result.codeResult.code;
+
+            // Stop the scanner after detecting the barcode
+            Quagga.stop();
+
+            // Hide the scanner display
+            document.getElementById('editscanner').style.display = 'none';
+        }
+    });
+
+    // Ensure the scanner stops and resets when the modal is closed
+    $('#editFormModal').on('hidden.bs.modal', function () {
+        Quagga.stop();  // Stop Quagga when the modal closes
+        document.getElementById('editscanner').style.display = 'none'; // Hide the scanner
+    });
+}
 
 
 

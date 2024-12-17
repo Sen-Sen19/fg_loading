@@ -2,11 +2,11 @@
 //SESSION
 include '../../process/login.php';
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['name'])) {
   header('location:../../');
   exit;
-} else if ($_SESSION['role'] == 'admin') {
-  header('location: ../../page/admin/scanned.php');
+} else if ($_SESSION['account_type'] == 'admin') {
+  header('location: ../../page/admin/history.php');
   exit;
 }
 ?>  
@@ -60,21 +60,22 @@ if (!isset($_SESSION['username'])) {
   </div>
 
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background-color: #0065fd;">
+  <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars" style="color: white;"></i></a>
       </li>
     </ul>
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-          <i class="fas fa-expand-arrows-alt"></i>
-        </a>
-      </li>
+    <li class="nav-item">
+  <a class="nav-link" data-widget="fullscreen" href="#" role="button" style="color: white;">
+    <i class="fas fa-expand-arrows-alt" style="color: white;"></i>
+  </a>
+</li>
+
     </ul>
   </nav>
   <!-- /.navbar -->

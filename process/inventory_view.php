@@ -4,7 +4,7 @@ include 'conn.php';
 header('Content-Type: application/json');
 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$recordsPerPage = 15; 
+$recordsPerPage = 15;
 
 $containerNo = isset($_GET['container_no']) ? $_GET['container_no'] : '';
 $palletNo = isset($_GET['pallet_no']) ? $_GET['pallet_no'] : '';
@@ -13,50 +13,67 @@ $offset = ($page - 1) * $recordsPerPage;
 
 $query = "
 SELECT 
-    inv.[id],
-    inv.[container],
-    inv.[pallet],
-    inv.[position],
-    inv.[remarks],
-    inv.[poly_size],
-    inv.[quantity],
-    inv.[others],
-    inv.[scanned_by],
-    loc.[destination],
-     inv.[status],
-          inv.[delete],
-          inv.[additional],
-        loc.[polytainer_name]
-FROM [fg_loading_db].[dbo].[inventory] AS inv
-LEFT JOIN [fg_loading_db].[dbo].[location] AS loc
-    ON loc.[tw_no] = inv.[container]";
+    `out`.id,
+    `out`.container_no,
+    `out`.location,
+    `out`.position,
+    `out`.pallet_no,
+    `out`.poly_size,
+    `out`.remarks,
+    `out`.date_scan,
+    `out`.poly_qty,
+    `out`.id_scanned
+FROM fgls_output AS `out`"; // Escaped the alias `out` with backticks
 
 $conditions = [];
 if ($containerNo) {
-    $conditions[] = "inv.container LIKE '%" . $containerNo . "%'";
+    $conditions[] = "`out`.container_no LIKE '%" . mysqli_real_escape_string($conn, $containerNo) . "%'";
 }
 if ($palletNo) {
-    $conditions[] = "inv.pallet LIKE '%" . $palletNo . "%'";
+    $conditions[] = "`out`.pallet_no LIKE '%" . mysqli_real_escape_string($conn, $palletNo) . "%'";
 }
 
 if (count($conditions) > 0) {
     $query .= " WHERE " . implode(' AND ', $conditions);
 }
 
-$query .= " ORDER BY inv.[id] DESC
-      OFFSET $offset ROWS FETCH NEXT $recordsPerPage ROWS ONLY";
+// Query to get the total number of records (without LIMIT and OFFSET)
+$totalQuery = "
+SELECT COUNT(*) AS total_records
+FROM fgls_output AS `out`";
+if (count($conditions) > 0) {
+    $totalQuery .= " WHERE " . implode(' AND ', $conditions);
+}
 
-$result = sqlsrv_query($conn, $query);
+// Execute the total query
+$totalResult = mysqli_query($conn, $totalQuery);
+if (!$totalResult) {
+    echo json_encode(['error' => mysqli_error($conn)]);
+    exit;
+}
 
-if ($result === false) {
-    echo json_encode(['error' => sqlsrv_errors()]);
+$totalRow = mysqli_fetch_assoc($totalResult);
+$totalRecords = $totalRow['total_records'];
+
+// Now fetch the data for the current page
+$query .= " ORDER BY `out`.id DESC
+    LIMIT $recordsPerPage OFFSET $offset";
+
+$result = mysqli_query($conn, $query);
+
+if (!$result) {
+    echo json_encode(['error' => mysqli_error($conn)]);
     exit;
 }
 
 $data = [];
-while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+while ($row = mysqli_fetch_assoc($result)) {
     $data[] = $row;
 }
 
-echo json_encode($data);
+// Return the data along with the total count
+echo json_encode([
+    'data' => $data,
+    'totalRecords' => $totalRecords
+]);
 ?>

@@ -47,17 +47,6 @@
           </a>
         </li>
 
-        <li class="nav-item">
-          <?php if ($_SERVER['REQUEST_URI'] == "/fg_loading/page/admin/scanned.php") { ?>
-          <a href="scanned.php" class="nav-link active">
-          <?php } else { ?>
-          <a href="scanned.php" class="nav-link">
-          <?php } ?>
-            <i class="nav-icon fas fa-file-alt"></i>
-            <p>Scanned</p>
-          </a>
-        </li>
-
 
 
 

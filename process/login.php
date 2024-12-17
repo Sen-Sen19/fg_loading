@@ -1,48 +1,68 @@
-<?php 
-session_name("fg_loading");
+<?php
+session_name("fgls_db");
 session_start();
-
 include 'conn.php';
 
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 if (isset($_POST['Login'])) {
-    $username = $_POST['username'];  // Change 'name' to 'username'
-    $password = $_POST['password'];
+    $id_number = $_POST['id_number'];  // Capture ID number from form input
 
-    $sql = "SELECT username, role FROM account WHERE username = ? AND password = ?";  // Change 'name' to 'username'
-    $params = array($username, $password);
-    $stmt = sqlsrv_prepare($conn, $sql, $params);
+    // Using MySQL query with mysqli to fetch account info
+    $sql = "SELECT id_number, account_type, name FROM fgls_account WHERE id_number = ?";
+    
+    // Prepare the statement
+    if ($stmt = mysqli_prepare($conn, $sql)) {
+        
+        // Bind the parameter
+        mysqli_stmt_bind_param($stmt, "s", $id_number); // "s" means string
+        
+        // Execute the statement
+        if (mysqli_stmt_execute($stmt)) {
+            // Bind the result
+            mysqli_stmt_bind_result($stmt, $id_number_db, $account_type, $name);
+            
+            // Check if there's a result
+            if (mysqli_stmt_fetch($stmt)) {
+                // Set session variables
+                $_SESSION['id_number'] = $id_number_db;
+                $_SESSION['account_type'] = $account_type;
+                $_SESSION['name'] = $name;
 
-    if ($stmt && sqlsrv_execute($stmt)) {
-        if (sqlsrv_has_rows($stmt)) {
-            $result = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-            $role = $result['role']; 
-            $_SESSION['username'] = $username;  // Change 'name' to 'username'
-            $_SESSION['password'] = $password;
-            $_SESSION['role'] = $role;
-
-            if ($role == 'user') {
-                header('location:../page/user/scan.php');
-                exit;
-            } elseif ($role == 'admin') { 
-                header('location: /fg_loading/page/admin/scanned.php');
+                // Redirect based on account type
+                if (strtolower($account_type) == 'user') {
+                    header('Location: ../page/user/scan.php');
+                    exit;
+                } elseif (strtolower($account_type) == 'admin') { 
+                    header('Location: /fg_loading/page/admin/history.php');
+                    exit;
+                }
+            } else {
+                // Incorrect credentials
+                echo '<script>
+                        alert("Sign In Failed. Maybe an incorrect credential or account not found");
+                        window.location.href = "/fg_loading/index.php";
+                      </script>';
                 exit;
             }
         } else {
-            echo '<script>
-                    alert("Sign In Failed. Maybe an incorrect credential or account not found");
-                    window.location.href = "/fg_loading/index.php";
-                  </script>';
-            exit;
+            echo '<script>alert("Sign In Failed. Error in preparing or executing SQL query.")</script>';
         }
+        
+        // Close the statement
+        mysqli_stmt_close($stmt);
     } else {
-        echo '<script>alert("Sign In Failed. Error in preparing or executing SQL query.")</script>';
+        echo '<script>alert("Sign In Failed. Error in preparing SQL query.")</script>';
     }
 }
+
 
 if (isset($_POST['Logout'])) {
     session_unset();
     session_destroy();
-    header('location: /fg_loading/');
+    header('Location: /fg_loading/');
     exit;
 }
 ?>

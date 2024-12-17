@@ -1,15 +1,13 @@
 <?php
-$serverName = "172.25.116.188";
-$connectionOptions = array(
-    "Database" => "fg_loading_db",
-    "Uid" => "sa",
-    "PWD" => "SystemGroup@2022"
-);
+$servername = "127.0.0.1"; //<!-- $servername = "172.25.112.171";
+$username = "root";        
+$password = "";            
+$dbname = "fgls_db";    
 
- 
-$conn = sqlsrv_connect($serverName, $connectionOptions);
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-if ($conn === false) {
-    die(print_r(sqlsrv_errors(), true));
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 ?>
