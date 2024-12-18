@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const others = document.getElementById('edit_others').value;
         const scannedBy = document.getElementById('edit_scanned_by').value;
         const id = document.getElementById('editModal').dataset.id; 
-        const editStatus = document.getElementById('edit_status').value; // Getting the value of edit_status
+        const editStatus = document.getElementById('edit_status').value; 0
 
         console.log("edit_status:", editStatus);
      
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
+            body: JSON.stringify({editClearButton
                 id: id,  
                 container: container,
                 pallet: pallet,
@@ -513,6 +513,26 @@ function scanQRCode(field) {
 
 
 
+document.addEventListener('DOMContentLoaded', () => {
+    const remarksInput = document.getElementById('remarks');
+
+    // Set the default value but keep it invisible to the user
+    remarksInput.value = "";
+
+    remarksInput.addEventListener('blur', () => {
+        // If the user leaves the field empty, set the value back to "Scanned"
+        if (remarksInput.value.trim() === "") {
+            remarksInput.value = "Scanned";
+        }
+    });
+
+    remarksInput.addEventListener('focus', () => {
+        // Clear the field on focus if the value is "Scanned"
+        if (remarksInput.value === "Scanned") {
+            remarksInput.value = "";
+        }
+    });
+});
 
 
 </script>

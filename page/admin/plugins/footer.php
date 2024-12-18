@@ -10,6 +10,7 @@
 <?php
 //MODALS
 include '../../modals/logout_modal.php';
+include '../../modals/edit_modal.php';
 
 ?>
 <!-- jQuery -->
