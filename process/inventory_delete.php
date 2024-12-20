@@ -1,36 +1,31 @@
 <?php
-require_once 'conn.php'; 
+include('conn.php'); // Include your connection file
 
-// Decode JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $palletNo = $_POST['pallet_no'] ?? '';
 
-if (!isset($input['id']) || empty($input['id'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid ID']);
-    exit;
-}
+    if (empty($palletNo)) {
+        echo json_encode(['success' => false, 'message' => 'Pallet number is required']);
+        exit;
+    }
 
-$id = $input['id'];
+    $query = "DELETE FROM fgls_output WHERE pallet_no = ?";
+    $stmt = mysqli_prepare($conn, $query);
 
-// SQL query to mark the record as deleted
-$sql = "UPDATE inventory SET [delete] = ? WHERE id = ?";
-$params = ['Deleted', $id]; // Assuming '1' indicates deleted, adjust as per your database schema
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "s", $palletNo);
+        if (mysqli_stmt_execute($stmt)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to delete record']);
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to prepare query']);
+    }
 
-$stmt = sqlsrv_prepare($conn, $sql, $params);
-
-if (!$stmt) {
-    $errors = sqlsrv_errors();
-    echo json_encode(['success' => false, 'message' => 'Failed to prepare statement', 'details' => $errors]);
-    exit;
-}
-
-if (sqlsrv_execute($stmt)) {
-    echo json_encode(['success' => true, 'message' => 'Record marked as deleted']);
+    mysqli_close($conn);
 } else {
-    $errors = sqlsrv_errors();
-    echo json_encode(['success' => false, 'message' => 'Failed to mark record as deleted', 'details' => $errors]);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
-
-// Free statement and close the connection
-sqlsrv_free_stmt($stmt);
-sqlsrv_close($conn);
 ?>

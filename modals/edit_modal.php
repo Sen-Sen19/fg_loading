@@ -1,6 +1,6 @@
 <div class="modal fade" id="editFormModal" tabindex="-1" role="dialog" aria-labelledby="editFormModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color:rgb(80, 80, 80); color: white; padding: 0.5rem 1rem;">
                 <h5 class="modal-title" id="editFormModalLabel">Edit Record</h5>
@@ -77,8 +77,9 @@
                 </form>
             </div>
             <div class="modal-footer d-flex justify-content-between w-100">
-                <button type="button" class="btn btn-danger btn-sm" id="editCloseButton"
-                    style="width: 120px;">Close</button>
+                <button type="button" class="btn btn-danger btn-sm" id="editDeleteButton"
+                    style="width: 120px;">Delete</button>
+                    
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-secondary btn-sm mr-2" id="editClearButton"
                         style="width: 120px;">Clear</button>
@@ -176,4 +177,74 @@
         });
         setInterval(updateDatetime, 60000);
     });
+
+
+    document.getElementById('editDeleteButton').addEventListener('click', function () {
+    const palletNo = document.getElementById('editPalletNo').value;
+
+    if (!palletNo) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Information',
+            text: 'Pallet number is required for deletion.',
+            timer: 3000,
+            showConfirmButton: false
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('pallet_no', palletNo);
+
+            fetch('../../process/inventory_delete.php', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: 'The record has been deleted.',
+                            timer: 500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            $('#editFormModal').modal('hide');
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was an error deleting the record.',
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was an error with the delete process.',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
+                });
+        }
+    });
+});
+
 </script>

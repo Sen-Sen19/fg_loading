@@ -54,6 +54,7 @@
                                         <th>Poly Size</th>
                                         <th>Quantity of Poly</th>
                                         <th>Remarks</th>
+                                        <th>Judgement</th>
                                         <th>Date Scan</th>
                                         <th>Scanned By</th>
               
@@ -138,6 +139,7 @@ function fetchData(page) {
                     <td>${item.poly_size}</td>
                     <td>${item.poly_qty}</td>
                     <td>${item.remarks}</td>
+                      <td>${item.judgement}</td>
                     <td>${item.date_scan}</td>
                     <td>${item.id_scanned}</td>
                 `;

@@ -17,6 +17,7 @@ SELECT
     `out`.pallet_no,
     `out`.poly_size,
     `out`.remarks,
+    `out`.judgement,
     `out`.date_scan,
     `out`.poly_qty,
     `out`.id_scanned
