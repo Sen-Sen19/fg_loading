@@ -8,6 +8,7 @@
                     <li class="nav-item mr-4 pt-3">
                         <p style="color: #fff; font-size: 15px;"><i class="fas fa-calendar-check"></i>&nbsp;&nbsp;<span
                                 id="editDatetime"></span></p>
+                                
                     </li>
                 </ul>
             </div>
