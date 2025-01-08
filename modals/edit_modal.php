@@ -14,8 +14,6 @@
             </div>
             <div class="modal-body">
                 <form>
-
-                
                     <input type="hidden" id="editRecordId">
 
                     <div class="form-row mb-3">
@@ -164,7 +162,7 @@
                     showConfirmButton: false
                 });
             });
-    });
+    }); 
     document.addEventListener("DOMContentLoaded", function () {
         function updateDatetime() {
             const now = new Date();
